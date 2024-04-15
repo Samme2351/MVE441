@@ -9,6 +9,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC  
 from sklearn.linear_model import LogisticRegression
 from sklearn.feature_selection import SelectKBest, f_classif
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from tqdm import tqdm
 
 df = pd.read_csv('Data/TCGAdata.txt', sep=" " ,header=0)
@@ -24,7 +25,7 @@ scaler = StandardScaler()
 X_train = pd.DataFrame(np.transpose(scaler.fit_transform(X_train.transpose())), columns=X_train.columns)
 X_test = pd.DataFrame(np.transpose(scaler.fit_transform(X_test.transpose())), columns=X_test.columns)
 
-max_num_components = 25
+max_num_components = 40
 num_components_range = range(1, max_num_components)
 
 ##KNN PCA
@@ -116,6 +117,23 @@ def KNN_features(X_train, X_test, y_train, y_test):
     print("Cross val err: ", cross_val_err)
     print("Train err: ", train_error)
     print("Test err: ", test_error)
+
+def LDA_PCA(X_train, X_test, y_train, y_test):
+    LDA_mean_scores = np.zeros(max_num_components)
+
+    for n_components in tqdm(num_components_range):
+        LDA_pipeline = make_pipeline(PCA(n_components=n_components), LDA())
+        LDA_scores = cross_val_score(LDA_pipeline, X_train, y_train, cv = 5)
+
+        LDA_mean_score = LDA_scores.mean()
+
+        LDA_mean_scores[n_components] = LDA_mean_score
+
+    LDA_optimal_n_components = np.where(LDA_mean_scores==LDA_mean_scores.max())[0][0]+1
+    cross_val_err = 1 - max(LDA_mean_scores)
+
+    print("LDA optimal number of PCA components:", LDA_optimal_n_components)
+
 
 
 def SVC_PCA(X_train, X_test, y_train, y_test):
@@ -292,15 +310,15 @@ def LR_features(X_train, X_test, y_train, y_test):
 
 def main():
     
-
-
+    LDA_PCA(X_train, X_test, y_train, y_test)
+    '''
     KNN_PCA(X_train, X_test, y_train, y_test)
     KNN_features(X_train, X_test, y_train, y_test)
     SVC_PCA(X_train, X_test, y_train, y_test)
     SVC_features(X_train, X_test, y_train, y_test)
     LR_PCA(X_train, X_test, y_train, y_test)
     LR_features(X_train, X_test, y_train, y_test)
-    
+    '''
     return 0
 
 main()
