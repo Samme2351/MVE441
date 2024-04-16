@@ -66,7 +66,7 @@ data = (data1+data2+data3+data4+data5+data6+data7)/7
 
 
 x = [0.7, 0.8, 0.9]
-fig, axs = plt.subplots(2,3)
+fig, axs = plt.subplots(6,3)
 
 type = ['-', '*-', '--']
 color = ["blue", "green", "red", "purple", "pink", "black"]
@@ -76,6 +76,12 @@ for k in range(3):
         for i in range(3):
             axs[j,k].plot(x, [data[i][s], data[i][6+s], data[i][12+s]], color = color[i])
             axs[j,k].set_title(lab.columns[s][:-6])
+
+            axs[2+j,k].plot(x, [data[i][18+s], data[i][24+s], data[i][30+s]], color = color[i])
+            axs[2+j,k].set_title(lab.columns[18+s][:-6])
+
+            axs[4+j,k].plot(x, [data[i][36+s], data[i][42+s], data[i][48+s]], color = color[i])
+            axs[4+j,k].set_title(lab.columns[36+s][:-6])
         s += 1
 
 for ax in axs.flat:
