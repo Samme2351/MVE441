@@ -138,7 +138,7 @@ def SVC_PCA(X_train, X_test, y_train, y_test):
     for n_components in tqdm(num_components_range):
 
         #PCA
-
+ 
         SVC_pipeline = make_pipeline(PCA(n_components=n_components), SVC())
 
         SVC_scores = cross_val_score(SVC_pipeline, X_train, y_train, cv=5)
