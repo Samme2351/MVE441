@@ -17,10 +17,10 @@ labels_df = pd.read_csv('Data/TCGAlabels', sep=" " ,header=0)
 
 #Set max number of components for PCA
 max_num_components = 30
-num_components_range = range(1, max_num_components+1)
+num_components_range = range(max_num_components)
 
 max_num_features = 100
-num_features = range(1, max_num_features+1)
+num_features = range(max_num_features)
 
 #Pre-processes the data by splitting and normalizing 
 def pre_process(data, labels, train_size):

@@ -17,8 +17,10 @@ labels_df = pd.read_csv('Data/TCGAlabels', sep=" " ,header=0)
 
 #Set max number of components for PCA
 max_num_components = 30
+num_components_range = range(max_num_components)
 
-num_components_range = range(1, max_num_components)
+max_num_features = 100
+num_features = range(max_num_features)
 
 #Pre-processes the data by splitting and normalizing 
 def pre_process(data, labels, train_size):
@@ -76,9 +78,6 @@ def KNN_PCA(X_train, X_test, y_train, y_test):
 ##KNN features
 
 def KNN_features(X_train, X_test, y_train, y_test):
-    max_num_features = 100
-
-    num_features = range(1, max_num_features)
     KNN_mean_scores = np.zeros(max_num_features)
 
     # Loop over different numbers of features
@@ -167,8 +166,6 @@ def SVC_PCA(X_train, X_test, y_train, y_test):
     return [train_error, cross_val_err, test_error, SVC_optimal_n_components]##SVC features
 
 def SVC_features(X_train, X_test, y_train, y_test):
-    max_num_features = 100
-    num_features = range(1, max_num_features)
     SVC_mean_scores = np.zeros(max_num_features)
 
     # Loop over different numbers of components
@@ -260,8 +257,6 @@ def LR_PCA(X_train, X_test, y_train, y_test):
 ##Logistic Regression features
 
 def LR_features(X_train, X_test, y_train, y_test):
-    max_num_features = 100
-    num_features = range(1, max_num_features)
     LR_mean_scores = np.zeros(max_num_features)
 
     # Loop over different numbers of components
