@@ -29,7 +29,7 @@ def pre_process(data, labels, train_size):
     #Scale after split to avoid data leakage
     scaler = StandardScaler()
     X_train = pd.DataFrame(np.transpose(scaler.fit_transform(X_train.transpose())), columns=X_train.columns)
-    X_test = pd.DataFrame(np.transpose(scaler.fit_transform(X_test.transpose())), columns=X_test.columns)
+    X_test = pd.DataFrame(np.transpose(scaler.transform(X_test.transpose())), columns=X_test.columns)
     
     return X_train, X_test, y_train, y_test
 
