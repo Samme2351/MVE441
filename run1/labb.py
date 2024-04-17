@@ -25,11 +25,11 @@ def pre_process(data, labels, train_size):
     #Split data into training and test data
     X_train, X_test, y_train, y_test = train_test_split(df, labels_df.values.ravel(), test_size=1-train_size)
     
-    #Standardize the rows (transposing as fit_transform standardizes along columns)
+    #Standardize the columns
     #Scale after split to avoid data leakage
     scaler = StandardScaler()
-    X_train = pd.DataFrame(np.transpose(scaler.fit_transform(X_train.transpose())), columns=X_train.columns)
-    X_test = pd.DataFrame(np.transpose(scaler.transform(X_test.transpose())), columns=X_test.columns)
+    X_train = pd.DataFrame(scaler.fit_transform(X_train), columns=X_train.columns)
+    X_test = pd.DataFrame(scaler.transform(X_test), columns=X_test.columns)
     
     return X_train, X_test, y_train, y_test
 
@@ -43,7 +43,6 @@ def KNN_PCA(X_train, X_test, y_train, y_test):
     for n_components in tqdm(num_components_range):
 
         #PCA
-
         KNN_pipeline = make_pipeline(PCA(n_components=n_components), KNeighborsClassifier(n_neighbors=5))
 
         KNN_scores = cross_val_score(KNN_pipeline, X_train, y_train, cv=5)
