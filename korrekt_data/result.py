@@ -2,16 +2,16 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
-test = pd.read_csv('data.csv', sep=" " ,header=0)
-data1 = pd.read_csv('data.csv', sep=" " ,header=0).to_numpy()
-data2 = pd.read_csv('run1/data.csv', sep=" " ,header=0).to_numpy()
-data3 = pd.read_csv('run2/data.csv', sep=" " ,header=0).to_numpy()
-data4 = pd.read_csv('run3/data.csv', sep=" " ,header=0).to_numpy()
-data5 = pd.read_csv('run4/data.csv', sep=" " ,header=0).to_numpy()
-data6 = pd.read_csv('data_1.csv', sep=" " ,header=0).to_numpy()
-data7 = pd.read_csv('data_2.csv', sep=" " ,header=0).to_numpy()
+labels = pd.read_csv('data_1.csv', sep=" " ,header=0)
+data1 = pd.read_csv('data_1.csv', sep=" " ,header=0).to_numpy()
+data2 = pd.read_csv('data_2.csv', sep=" " ,header=0).to_numpy()
+data3 = pd.read_csv('data_3.csv', sep=" " ,header=0).to_numpy()
+data4 = pd.read_csv('data_4.csv', sep=" " ,header=0).to_numpy()
+data5 = pd.read_csv('data_5.csv', sep=" " ,header=0).to_numpy()
+#data6 = pd.read_csv('data_6.csv', sep=" " ,header=0).to_numpy()
+#data7 = pd.read_csv('data_7.csv', sep=" " ,header=0).to_numpy()
 
-data = (data1+data2+data3+data4+data5+data6+data7)/7
+data = (data1+data2+data3+data4+data5)/5#+data6+data7)/7
 
 x = [0.7, 0.8, 0.9]
 fig, axs = plt.subplots(2,3)
@@ -21,7 +21,7 @@ for j in range(3):
     for k in range(2):
         for i in range(3):
             axs[k,j].plot(x, [data[i][s], data[i][6+s], data[i][12+s]], color = color[i])
-            axs[k,j].set_title(test.columns[s][:-6])
+            axs[k,j].set_title(labels.columns[s][:-6])
         s += 1
 
 for ax in axs.flat:
@@ -53,14 +53,14 @@ plt.show()
 
 #Misses
 
-lab = data1 = pd.read_csv('data_miss.csv', sep=" " ,header=0, index_col=0)
-data1 = pd.read_csv('data_miss.csv', sep=" " ,header=0, index_col=0).to_numpy()
-data2 = pd.read_csv('run1/data_miss.csv', sep=" " ,header=0, index_col=0).to_numpy()
-data3 = pd.read_csv('run2/data_miss.csv', sep=" " ,header=0, index_col=0).to_numpy()
-data4 = pd.read_csv('run3/data_miss.csv', sep=" " ,header=0, index_col=0).to_numpy()
-data5 = pd.read_csv('run4/data_miss.csv', sep=" " ,header=0, index_col=0).to_numpy()
-data6 = pd.read_csv('data_miss_1.csv', sep=" " ,header=0, index_col=0).to_numpy()
-data7 = pd.read_csv('data_miss_2.csv', sep=" " ,header=0, index_col=0).to_numpy()
+labels = pd.read_csv('data_miss.csv', sep=" " ,header=0, index_col=0)
+data1 = pd.read_csv('data_miss_1.csv', sep=" " ,header=0, index_col=0).to_numpy()
+data2 = pd.read_csv('data_miss_2.csv', sep=" " ,header=0, index_col=0).to_numpy()
+data3 = pd.read_csv('data_miss_3.csv', sep=" " ,header=0, index_col=0).to_numpy()
+data4 = pd.read_csv('data_miss_4.csv', sep=" " ,header=0, index_col=0).to_numpy()
+data5 = pd.read_csv('data_miss_5.csv', sep=" " ,header=0, index_col=0).to_numpy()
+data6 = pd.read_csv('data_miss_6.csv', sep=" " ,header=0, index_col=0).to_numpy()
+data7 = pd.read_csv('data_miss_7.csv', sep=" " ,header=0, index_col=0).to_numpy()
 
 data = (data1+data2+data3+data4+data5+data6+data7)/7
 
