@@ -45,7 +45,7 @@ def KNN_PCA(X_train, X_test, y_train, y_test):
     for n_components in tqdm(num_components_range):
 
         #PCA
-        KNN_pipeline = make_pipeline(PCA(n_components=n_components), KNeighborsClassifier(n_neighbors=5))
+        KNN_pipeline = make_pipeline(PCA(n_components=n_components+1), KNeighborsClassifier(n_neighbors=5))
 
         KNN_scores = cross_val_score(KNN_pipeline, X_train, y_train, cv=5)
         KNN_mean_score = KNN_scores.mean()
@@ -83,7 +83,7 @@ def KNN_features(X_train, X_test, y_train, y_test):
     # Loop over different numbers of features
     for k in tqdm(num_features):
 
-        feature_selector = SelectKBest(f_classif, k=k)
+        feature_selector = SelectKBest(f_classif, k=k+1)
 
         X_train_selected = feature_selector.fit_transform(X_train, y_train)
 
@@ -137,7 +137,7 @@ def SVC_PCA(X_train, X_test, y_train, y_test):
 
         #PCA
  
-        SVC_pipeline = make_pipeline(PCA(n_components=n_components), SVC())
+        SVC_pipeline = make_pipeline(PCA(n_components=n_components+1), SVC())
 
         SVC_scores = cross_val_score(SVC_pipeline, X_train, y_train, cv=5)
         SVC_mean_score = SVC_scores.mean()
@@ -171,7 +171,7 @@ def SVC_features(X_train, X_test, y_train, y_test):
     # Loop over different numbers of components
     for k in tqdm(num_features):
 
-        feature_selector = SelectKBest(f_classif, k=k)
+        feature_selector = SelectKBest(f_classif, k=k+1)
 
         X_train_selected = feature_selector.fit_transform(X_train, y_train)
 
@@ -226,7 +226,7 @@ def LR_PCA(X_train, X_test, y_train, y_test):
 
         #PCA
 
-        LR_pipeline = make_pipeline(PCA(n_components=n_components), LogisticRegression(solver='lbfgs', max_iter=10000))
+        LR_pipeline = make_pipeline(PCA(n_components=n_components+1), LogisticRegression(solver='lbfgs', max_iter=10000))
 
         LR_scores = cross_val_score(LR_pipeline, X_train, y_train, cv=5)
         LR_mean_score = LR_scores.mean()
@@ -262,7 +262,7 @@ def LR_features(X_train, X_test, y_train, y_test):
     # Loop over different numbers of components
     for k in tqdm(num_features):
 
-        feature_selector = SelectKBest(f_classif, k=k)
+        feature_selector = SelectKBest(f_classif, k=k+1)
 
         X_train_selected = feature_selector.fit_transform(X_train, y_train)
 
