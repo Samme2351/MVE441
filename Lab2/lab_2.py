@@ -14,6 +14,13 @@ labels_df = pd.read_csv('./data/TCGAlabels', sep=" " ,header=0, index_col= 0)
 def pre_process(data, labels, train_size):
     #Split data into training and test data
     X_train, X_test, y_train, y_test = train_test_split(data, labels.values.ravel(), test_size=1-train_size)
+
+    #Standardize the columns
+    #Scale after split to avoid data leakage
+    scaler = StandardScaler()
+    X_train = pd.DataFrame(scaler.fit_transform(X_train), columns=X_train.columns)
+    X_test = pd.DataFrame(scaler.transform(X_test), columns=X_test.columns)
+    
     return X_train, X_test, y_train, y_test
 
 
@@ -70,6 +77,6 @@ for error in [0.1,0.5,1,3]:
     X_train_noise, X_test_noise= noise(X_train, X_test, noise = error)
     d[f"Noise_{error:.1f}"] = random_forest(X_train_noise, X_test_noise, y_train, y_test)
 
-
+ 
 df_1 = pd.DataFrame(data =d, index = ['Train', 'Cross','std', 'Test', 'Important_labels', 'Importance_value'])
 df_1.to_csv('./data.csv', sep=" ")
