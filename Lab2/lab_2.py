@@ -71,7 +71,7 @@ def random_forest(X_train, X_test, y_train, y_test):
 
 
 def gradient_boosting(X_train, X_test, y_train, y_test):
-    tree_sizes = [5, 10]
+    tree_sizes = [5]
     max_depth = 2
     GB_mean_scores = np.zeros(len(tree_sizes))
     GB_std_scores = np.zeros(len(tree_sizes))
@@ -98,18 +98,18 @@ def gradient_boosting(X_train, X_test, y_train, y_test):
     test_pred = GB.predict(X_test)
     test_error = 1 - accuracy_score(y_test, test_pred)
 
-
+    return [train_error, cross_val_err, GB_optimal_std, test_error, list(df.columns[GB.feature_import    ances_>0].values), list(GB.feature_importances_[RF.feature_importances_>0])]
 
 #Noise = 0
 d= dict()
 X_train, X_test, y_train, y_test = pre_process(df, labels_df, 0.8)
 5, 
 
-d["Noise_0"] = gradient_boosting(X_train, X_test, y_train, y_test)
+d["Noise_0"] = random_forest(X_train, X_test, y_train, y_test)
 
 for error in [0.1,0.3,0.5,0.8,1]:
     X_train_noise, X_test_noise= noise(X_train, X_test, noise = error)
-    d[f"Noise_{error:.1f}"] = gradient_boosting(X_train_noise, X_test_noise, y_train, y_test)
+    d[f"Noise_{error:.1f}"] = random_forest(X_train_noise, X_test_noise, y_train, y_test)
 
 
 
@@ -121,4 +121,20 @@ for error in [0.1,0.3,0.5,0.8,1]:
 
 
 df_1 = pd.DataFrame(data =d, index = ['Train', 'Cross','std', 'Test', 'Important_labels', 'Importance_value'])
-df_1.to_csv('./data.csv', sep=" ")
+df_1.to_csv('./data_rf.csv', sep=" ")
+
+
+#Gradient boosting
+d= dict()
+X_train, X_test, y_train, y_test = pre_process(df, labels_df, 0.8)
+5, 
+
+d["Noise_0"] = gradient_boosting(X_train, X_test, y_train, y_test)
+
+for error in [0.1,0.3,0.5,0.8,1]:
+    X_train_noise, X_test_noise= noise(X_train, X_test, noise = error)
+    d[f"Noise_{error:.1f}"] = gradient_boosting(X_train_noise, X_test_noise, y_train, y_test)
+
+
+df_1 = pd.DataFrame(data =d, index = ['Train', 'Cross','std', 'Test', 'Important_labels', 'Importance_value'])
+df_1.to_csv('./data_gb.csv', sep=" ")
