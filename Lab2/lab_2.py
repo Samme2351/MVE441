@@ -71,24 +71,24 @@ def random_forest(X_train, X_test, y_train, y_test):
 
 
 def gradient_boosting(X_train, X_test, y_train, y_test):
-    max_trees = 5
-    max_depth = 3
-    GB_mean_scores = np.zeros(max_trees)
-    GB_std_scores = np.zeros(max_trees)
+    tree_sizes = [5, 10]
+    max_depth = 2
+    GB_mean_scores = np.zeros(len(tree_sizes))
+    GB_std_scores = np.zeros(len(tree_sizes))
 
-    for n_trees in tqdm(range(max_trees)):
-        GB = GradientBoostingClassifier(n_estimators = n_trees+1, max_depth = max_depth)
+    for i in tqdm(range(len(tree_sizes))):
+        GB = GradientBoostingClassifier(n_estimators = tree_sizes[i], max_depth = max_depth)
         
-        GB_score = cross_val_score(GB, X_train, y_train)
+        GB_score = cross_val_score(GB, X_train, y_train, cv = 2)
 
         GB_mean_score = GB_score.mean()
         GB_std = GB_score.std()
-        GB_mean_scores[n_trees] = GB_mean_score
-        GB_std_scores[n_trees] = GB_std
+        GB_mean_scores[i] = GB_mean_score
+        GB_std_scores[i] = GB_std
 
 
-    GB_optimal_n_trees = np.where(GB_mean_scores==GB_mean_scores.max())[0][0]+1
-    GB_optimal_std = GB_std_scores[GB_optimal_n_trees-1]
+    GB_optimal_n_trees = tree_sizes[np.where(GB_mean_scores==GB_mean_scores.max())[0][0]]
+    GB_optimal_std = GB_std_scores[np.where(GB_mean_scores==GB_mean_scores.max())[0][0]]
     cross_val_err = 1 - max(GB_mean_scores)
 
     GB.fit(X_train, y_train)
@@ -103,7 +103,7 @@ def gradient_boosting(X_train, X_test, y_train, y_test):
 #Noise = 0
 d= dict()
 X_train, X_test, y_train, y_test = pre_process(df, labels_df, 0.8)
-
+5, 
 
 d["Noise_0"] = gradient_boosting(X_train, X_test, y_train, y_test)
 
@@ -120,5 +120,5 @@ for error in [0.1,0.3,0.5,0.8,1]:
 
 
 
-#df_1 = pd.DataFrame(data =d, index = ['Train', 'Cross','std', 'Test', 'Important_labels', 'Importance_value'])
-#df_1.to_csv('./data.csv', sep=" ")
+df_1 = pd.DataFrame(data =d, index = ['Train', 'Cross','std', 'Test', 'Important_labels', 'Importance_value'])
+df_1.to_csv('./data.csv', sep=" ")
