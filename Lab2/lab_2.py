@@ -16,6 +16,7 @@ def pre_process(data, labels, train_size):
     X_train, X_test, y_train, y_test = train_test_split(data, labels.values.ravel(), test_size=1-train_size)
     return X_train, X_test, y_train, y_test
 
+
 def noise(X_train, X_test, noise):
     X_train_noise = X_train.copy(deep=True)
     X_test_noise = X_test.copy(deep=True)
@@ -25,7 +26,7 @@ def noise(X_train, X_test, noise):
 
 
 def random_forest(X_train, X_test, y_train, y_test):
-    max_trees = 1
+    max_trees = 100
     RF_mean_scores = np.zeros(max_trees)
     RF_std_scores = np.zeros(max_trees)
 
@@ -51,14 +52,11 @@ def random_forest(X_train, X_test, y_train, y_test):
     test_pred = RF.predict(X_test)
     test_error = 1 - accuracy_score(y_test, test_pred)
 
-    #print("RF optimal number of trees:", RF_optimal_n_trees)
-    #print("Standard deviation of cross val error: ", RF_optimal_std)
-    #print("Cross val err: ", cross_val_err)
-    #print("Train err: ", train_error)
-    #print("Train err: ", 1-RF.score(X_train, y_train))
-    #print("Test err: ", test_error)
-    #print("Test err: ",1-RF.score(X_test, y_test))
-    #print(list(df.columns[RF.feature_importances_>0].values))
+    print("RF optimal number of trees:", RF_optimal_n_trees)
+    print("Standard deviation of cross val error: ", RF_optimal_std)
+    print("Cross val err: ", cross_val_err)
+    print("Train err: ", train_error)
+    print("Test err: ", test_error)
     return [train_error, cross_val_err, RF_optimal_std, test_error, list(df.columns[RF.feature_importances_>0].values), list(RF.feature_importances_[RF.feature_importances_>0])]
 
 #Noise = 0
@@ -68,17 +66,9 @@ X_train, X_test, y_train, y_test = pre_process(df, labels_df, 0.8)
 
 d["Noise_0"] = random_forest(X_train, X_test, y_train, y_test)
 
-for error in [0.1,0.3,0.5,0.8,1]:
+for error in [0.1,0.5,1,3]:
     X_train_noise, X_test_noise= noise(X_train, X_test, noise = error)
     d[f"Noise_{error:.1f}"] = random_forest(X_train_noise, X_test_noise, y_train, y_test)
-
-
-
-#print(d["test"])
-#print(df.columns[imp>0])
-#print(imp[imp>0])
-#print(len(imp[imp>0]))
-
 
 
 df_1 = pd.DataFrame(data =d, index = ['Train', 'Cross','std', 'Test', 'Important_labels', 'Importance_value'])

@@ -6,6 +6,10 @@ labels = pd.read_csv("data.csv", sep=" " ,header=0, index_col=0)
 data = pd.read_csv("data.csv", sep=" " ,header=0, index_col=0)
 print(data["Noise_0"])
 
+
+
+
+
 '''
 data2 = pd.read_csv('data_2.csv', sep=" " ,header=0, index_col=0).to_numpy()
 data3 = pd.read_csv('data_3.csv', sep=" " ,header=0, index_col=0).to_numpy()
