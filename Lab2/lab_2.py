@@ -11,16 +11,6 @@ from tqdm import tqdm
 df = pd.read_csv('./data/TCGAdata.txt', sep=" " ,header=0,index_col= 0)
 labels_df = pd.read_csv('./data/TCGAlabels', sep=" " ,header=0, index_col= 0)
 
-'''
-classes = dict()
-data = labels_df['x']
-for i in range(1,len(data)+1):
-    if data[i] not in classes:
-        classes[data[i]] = [i-1]
-    else:
-        classes[data[i]].append(i-1)
-print(df.iloc[classes['BC']])
-'''
 
 def pre_process(data, labels, train_size):
     #Split data into training and test data
@@ -93,7 +83,7 @@ def random_forest(X_train, X_test, y_train, y_test, classes):
     print("Class test error: ", er_clas)
     return [train_error, cross_val_err, RF_optimal_std, test_error, er_clas, list(df.columns[RF.feature_importances_>0].values), list(RF.feature_importances_[RF.feature_importances_>0])]
 
-def gradient_boosting(X_train, X_test, y_train, y_test):
+def gradient_boosting(X_train, X_test, y_train, y_test, classes):
     tree_sizes = [5]
     max_depth = 2
     GB_mean_scores = np.zeros(len(tree_sizes))
@@ -121,7 +111,11 @@ def gradient_boosting(X_train, X_test, y_train, y_test):
     test_pred = GB.predict(X_test)
     test_error = 1 - accuracy_score(y_test, test_pred)
 
-    return [train_error, cross_val_err, GB_optimal_std, test_error, list(df.columns[GB.feature_importances_>0].values), list(GB.feature_importances_[GB.feature_importances_>0])]
+    er_clas =dict()
+    for clas in classes:
+        er_clas[clas] = 1-accuracy_score(y_test[classes[clas]] ,GB.predict(X_test.iloc[classes[clas]]))
+
+    return [train_error, cross_val_err, GB_optimal_std, test_error, er_clas, list(df.columns[GB.feature_importances_>0].values), list(GB.feature_importances_[GB.feature_importances_>0])]
 
 
 #Noise = 0
@@ -131,14 +125,27 @@ X_train, X_test, y_train, y_test, classes = pre_process(df, labels_df, 0.8)
 #print(y_test[classes['U']])
 
 
-
-d["Noise_0.0"] = random_forest(X_train, X_test, y_train, y_test, classes)
-'''
+#Bagging
+#d["Noise_0.0"] = random_forest(X_train, X_test, y_train, y_test, classes)
 for error in [0,0.1,0.5,1,3]:
     X_train_noise, X_test_noise= noise(X_train, X_test, noise = error)
     d[f"Noise_{error:.1f}"] = random_forest(X_train_noise, X_test_noise, y_train, y_test, classes)
 
  
-df_1 = pd.DataFrame(data =d, index = ['Train', 'Cross','std', 'Test', 'Class_errors 'Important_labels', 'Importance_value'])
+df_1 = pd.DataFrame(data =d, index = ['Train', 'Cross','std', 'Test', 'Class_errors', 'Important_labels', 'Importance_value'])
 df_1.to_csv('./data.csv', sep=" ")
-'''
+
+
+#Gradient boosting
+d= dict()
+X_train, X_test, y_train, y_test = pre_process(df, labels_df, 0.8)
+5, 
+
+
+for error in [0,0.1,0.3,0.5,0.8,1]:
+    X_train_noise, X_test_noise= noise(X_train, X_test, noise = error)
+    d[f"Noise_{error:.1f}"] = gradient_boosting(X_train_noise, X_test_noise, y_train, y_test, classes)
+
+
+df_1 = pd.DataFrame(data =d, index = ['Train', 'Cross','std', 'Test', 'Important_labels', 'Importance_value'])
+df_1.to_csv('./data_gb.csv', sep=" ")
