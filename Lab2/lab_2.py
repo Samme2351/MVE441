@@ -43,24 +43,24 @@ def noise(X_train, X_test, noise):
 
 
 def random_forest(X_train, X_test, y_train, y_test, classes):
-    max_trees = 60
-    max_depth = 20
+    max_trees = 50
+    max_depth = 100
     RF_mean_scores = np.zeros(max_trees)
     RF_std_scores = np.zeros(max_trees)
 
-    for n_trees in tqdm(range(max_depth)):
-        RF = RandomForestClassifier(n_estimators = max_trees, max_depth=n_trees)
+    for depth in tqdm(range(max_depth)):
+        RF = RandomForestClassifier(n_estimators = max_trees, max_depth=depth+1)
         
         RF_score = cross_val_score(RF, X_train, y_train, cv = 5)
 
         RF_mean_score = RF_score.mean()
         RF_std = RF_score.std()
-        RF_mean_scores[n_trees] = RF_mean_score
-        RF_std_scores[n_trees] = RF_std
+        RF_mean_scores[depth] = RF_mean_score
+        RF_std_scores[depth] = RF_std
 
 
-    RF_optimal_n_trees = np.where(RF_mean_scores==RF_mean_scores.max())[0][0]+1
-    RF_optimal_std = RF_std_scores[RF_optimal_n_trees-1]
+    RF_optimal_depth = np.where(RF_mean_scores==RF_mean_scores.max())[0][0]+1
+    RF_optimal_std = RF_std_scores[RF_optimal_depth-1]
     cross_val_err = 1 - max(RF_mean_scores)
 
     RF.fit(X_train, y_train)
@@ -76,13 +76,13 @@ def random_forest(X_train, X_test, y_train, y_test, classes):
         er_clas[clas] = 1-accuracy_score(y_test[classes[clas]] ,RF.predict(X_test.iloc[classes[clas]]))
 
 
-    print("RF optimal number of trees:", RF_optimal_n_trees)
+    print("RF optimal depth:", RF_optimal_depth)
     print("Standard deviation of cross val error: ", RF_optimal_std)
     print("Cross val err: ", cross_val_err)
     print("Train err: ", train_error)
     print("Test err: ", test_error)
     print("Class test error: ", er_clas)
-    return [train_error, cross_val_err, RF_optimal_std, test_error, RF_optimal_n_trees, er_clas, list(df.columns[RF.feature_importances_>0].values), list(RF.feature_importances_[RF.feature_importances_>0])]
+    return [train_error, cross_val_err, RF_optimal_std, test_error, RF_optimal_depth, er_clas, list(df.columns[RF.feature_importances_>0].values), list(RF.feature_importances_[RF.feature_importances_>0])]
 
 def gradient_boosting(X_train, X_test, y_train, y_test, classes):
     tree_sizes = [5]
@@ -133,7 +133,7 @@ for error in [0,0.1,0.5,1,3]:
     d[f"Noise_{error:.1f}"] = random_forest(X_train_noise, X_test_noise, y_train, y_test, classes)
 
  
-df_1 = pd.DataFrame(data =d, index = ['Train', 'Cross','std', 'Test', 'Nr_trees' , 'Class_errors', 'Important_labels', 'Importance_value'])
+df_1 = pd.DataFrame(data =d, index = ['Train', 'Cross','std', 'Test', 'Depth' , 'Class_errors', 'Important_labels', 'Importance_value'])
 df_1.to_csv('./data.csv', sep=" ")
 
 '''
