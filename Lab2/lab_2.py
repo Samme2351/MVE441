@@ -42,7 +42,7 @@ def noise(X_train, X_test, noise):
 
 def random_forest(X_train, X_test, y_train, y_test, classes, data):
     max_trees = 50
-    max_depth = 50
+    max_depth = 100
     RF_mean_scores = np.zeros(max_depth)
     RF_std_scores = np.zeros(max_depth)
 
@@ -119,7 +119,6 @@ def gradient_boosting(X_train, X_test, y_train, y_test, classes, data):
 
 #Noise = 0
 '''
-
 ## Cancer dataset
 df = pd.read_csv('./data/TCGAdata.txt', sep=" " ,header=0,index_col= 0)
 labels_df = pd.read_csv('./data/TCGAlabels', sep=" " ,header=0, index_col= 0)
