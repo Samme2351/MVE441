@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split, cross_val_score
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score 
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import GradientBoostingClassifier
 from tqdm import tqdm
@@ -45,8 +45,8 @@ def noise(X_train, X_test, noise):
 def random_forest(X_train, X_test, y_train, y_test, classes):
     max_trees = 50
     max_depth = 100
-    RF_mean_scores = np.zeros(max_trees)
-    RF_std_scores = np.zeros(max_trees)
+    RF_mean_scores = np.zeros(max_depth)
+    RF_std_scores = np.zeros(max_depth)
 
     for depth in tqdm(range(max_depth)):
         RF = RandomForestClassifier(n_estimators = max_trees, max_depth=depth+1)
