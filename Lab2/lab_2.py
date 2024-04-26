@@ -43,14 +43,15 @@ def noise(X_train, X_test, noise):
 
 
 def random_forest(X_train, X_test, y_train, y_test, classes):
-    max_trees = 100
+    max_trees = 60
+    max_depth = 20
     RF_mean_scores = np.zeros(max_trees)
     RF_std_scores = np.zeros(max_trees)
 
-    for n_trees in tqdm(range(max_trees)):
-        RF = RandomForestClassifier(n_estimators = n_trees+1)
+    for n_trees in tqdm(range(max_depth)):
+        RF = RandomForestClassifier(n_estimators = max_trees, max_depth=n_trees)
         
-        RF_score = cross_val_score(RF, X_train, y_train)
+        RF_score = cross_val_score(RF, X_train, y_train, cv = 5)
 
         RF_mean_score = RF_score.mean()
         RF_std = RF_score.std()
@@ -81,7 +82,7 @@ def random_forest(X_train, X_test, y_train, y_test, classes):
     print("Train err: ", train_error)
     print("Test err: ", test_error)
     print("Class test error: ", er_clas)
-    return [train_error, cross_val_err, RF_optimal_std, test_error, er_clas, list(df.columns[RF.feature_importances_>0].values), list(RF.feature_importances_[RF.feature_importances_>0])]
+    return [train_error, cross_val_err, RF_optimal_std, test_error, RF_optimal_n_trees, er_clas, list(df.columns[RF.feature_importances_>0].values), list(RF.feature_importances_[RF.feature_importances_>0])]
 
 def gradient_boosting(X_train, X_test, y_train, y_test, classes):
     tree_sizes = [5]
@@ -132,10 +133,10 @@ for error in [0,0.1,0.5,1,3]:
     d[f"Noise_{error:.1f}"] = random_forest(X_train_noise, X_test_noise, y_train, y_test, classes)
 
  
-df_1 = pd.DataFrame(data =d, index = ['Train', 'Cross','std', 'Test', 'Class_errors', 'Important_labels', 'Importance_value'])
+df_1 = pd.DataFrame(data =d, index = ['Train', 'Cross','std', 'Test', 'Nr_trees' , 'Class_errors', 'Important_labels', 'Importance_value'])
 df_1.to_csv('./data.csv', sep=" ")
 
-
+'''
 #Gradient boosting
 d= dict()
 X_train, X_test, y_train, y_test = pre_process(df, labels_df, 0.8)
@@ -149,3 +150,4 @@ for error in [0,0.1,0.3,0.5,0.8,1]:
 
 df_1 = pd.DataFrame(data =d, index = ['Train', 'Cross','std', 'Test', 'Important_labels', 'Importance_value'])
 df_1.to_csv('./data_gb.csv', sep=" ")
+'''
