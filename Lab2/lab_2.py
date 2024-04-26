@@ -169,8 +169,6 @@ labels_df_images = pd.read_csv('./data/Labels.csv')
 d_1= dict()
 X_train, X_test, y_train, y_test, classes = pre_process(df_images, labels_df_images, 0.8)
 
-#print(y_test[classes['U']])
-
 
 #Bagging
 #d["Noise_0.0"] = random_forest(X_train, X_test, y_train, y_test, classes)
