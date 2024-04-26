@@ -114,11 +114,17 @@ def gradient_boosting(X_train, X_test, y_train, y_test, classes, data):
     for clas in classes:
         er_clas[clas] = 1-accuracy_score(y_test[classes[clas]] ,GB.predict(X_test.iloc[classes[clas]]))
 
-    return [train_error, cross_val_err, GB_optimal_std, test_error, er_clas, list(data.columns[GB.feature_importances_>0].values), list(GB.feature_importances_[GB.feature_importances_>0])]
+    print("GB optimal number trees:", GB_optimal_n_trees)
+    print("Standard deviation of cross val error: ", GB_optimal_std)
+    print("Cross val err: ", cross_val_err)
+    print("Train err: ", train_error)
+    print("Test err: ", test_error)
+    print("Class test error: ", er_clas)
+
+    return [train_error, cross_val_err, GB_optimal_std, test_error, GB_optimal_n_trees, er_clas, list(data.columns[GB.feature_importances_>0].values), list(GB.feature_importances_[GB.feature_importances_>0])]
 
 
-#Noise = 0
-'''
+
 ## Cancer dataset
 df = pd.read_csv('./data/TCGAdata.txt', sep=" " ,header=0,index_col= 0)
 labels_df = pd.read_csv('./data/TCGAlabels', sep=" " ,header=0, index_col= 0)
@@ -149,9 +155,9 @@ for error in [0,0.1,0.3,0.5,0.8,1]:
     d[f"Noise_{error:.1f}"] = gradient_boosting(X_train_noise, X_test_noise, y_train, y_test, classes, df)
 
 
-df_1 = pd.DataFrame(data =d, index = ['Train', 'Cross','std', 'Test', 'Depth' , 'Class_errors', 'Important_labels', 'Importance_value'])
+df_1 = pd.DataFrame(data =d, index = ['Train', 'Cross','std', 'Test', 'Trees' , 'Class_errors', 'Important_labels', 'Importance_value'])
 df_1.to_csv('./data_gb.csv', sep=" ")
-'''
+
 
 ## Cats and dogs data set
 df_images = pd.read_csv('./data/CATSnDOGS.csv', sep="," ,header=0,index_col= 0)
@@ -179,7 +185,6 @@ df_1.to_csv('./data_cat.csv', sep=" ")
 
 
 #Gradient boosting
-'''
 d= dict()
 X_train, X_test, y_train, y_test, classes = pre_process(df_images, labels_df_images, 0.8)
 
@@ -189,6 +194,5 @@ for error in [0,0.1,0.3,0.5,0.8,1]:
     d[f"Noise_{error:.1f}"] = gradient_boosting(X_train_noise, X_test_noise, y_train, y_test, classes, df_images)
 
 
-df_1 = pd.DataFrame(data =d, index = ['Train', 'Cross','std', 'Test', 'Depth' , 'Class_errors', 'Important_labels', 'Importance_value'])
+df_1 = pd.DataFrame(data =d, index = ['Train', 'Cross','std', 'Test', 'Trees' , 'Class_errors', 'Important_labels', 'Importance_value'])
 df_1.to_csv('./data_gb_cat.csv', sep=" ")
-'''
