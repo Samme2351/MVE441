@@ -160,8 +160,6 @@ df_images = pd.read_csv('./data/CATSnDOGS.csv', sep="," ,header=0,index_col= 0)
 labels_df_images = pd.read_csv('./data/Labels.csv')
 
 
-
-#Noise = 0
 d_1= dict()
 X_train, X_test, y_train, y_test, classes = pre_process(df_images, labels_df_images, 0.8)
 
@@ -179,7 +177,6 @@ df_1.to_csv('./data_cat.csv', sep=" ")
 
 
 #Gradient boosting
-
 
 for error in [0,0.1,0.3,0.5,0.8,1]:
     X_train_noise, X_test_noise= noise(X_train, X_test, noise = error)
