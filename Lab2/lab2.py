@@ -18,7 +18,7 @@ def test_split(split, df, labels_df):
     return X_train, X_test, y_train, y_test
 
 def rf(X_train, X_test, y_train, y_test):
-    max_trees = 50
+    max_trees = 100
     mean_errors = np.zeros(max_trees)
     std_devs = np.zeros(max_trees)
     top10_feat = np.zeros((max_trees,10), dtype=tuple)
@@ -40,7 +40,7 @@ def rf(X_train, X_test, y_train, y_test):
         confusion = confusion_matrix(y_test, f_pred)
 
         for j in range(6):
-            class_error_test[i][j] = confusion[j][j]/sum(confusion[:][j])
+            class_error_test[i,j] = confusion[j][j]/sum(confusion[:][j])
 
 
     return mean_errors, std_devs, top10_feat, class_error_test
@@ -83,24 +83,32 @@ def main():
 
     X_train, X_test, y_train, y_test = train_test_split(df, labels_df.values.ravel(), test_size=1-split, random_state=42)
 
-    figure, axis = plt.subplots(fps[0], fps[1]) 
+    figure1, axis = plt.subplots(fps[0], fps[1]) 
     for i in range(fps[0]):
         for j in range(fps[1]):
             plot_feature(i+1,j+1,df,labels_df, axis[i,j])
 
-    plt.show()
+    #plt.show()
 
-    '''
+
     mean_errors, std_devs, top10_feat, class_error_test = rf(X_train, X_test, y_train, y_test)
+    
+    print(class_error_test.shape)
     plotrange = range(1,101)
 
     print('Standard deviations are: ',std_devs)
     print('Top 10 features are: ', top10_feat)
 
+    figure2 = plt.figure()
     plt.plot(plotrange, mean_errors)
+  
+
+    figure3 = plt.figure()
+
+    for c in range(class_error_test.shape[1]):
+        plt.plot(plotrange, class_error_test[:,c])
+
     plt.show()
-    '''
-    
     '''
 
     for s in [0.05, 0.1, 0.2, 0.4, 0.8, 1.6]:
