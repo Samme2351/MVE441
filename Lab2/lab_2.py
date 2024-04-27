@@ -6,6 +6,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import GradientBoostingClassifier
 from tqdm import tqdm
+from xgboost import XGBClassifier
 
 
 
@@ -83,13 +84,13 @@ def random_forest(X_train, X_test, y_train, y_test, classes, data):
     return [train_error, cross_val_err, RF_optimal_std, test_error, RF_optimal_depth, er_clas, list(data.columns[RF.feature_importances_>0].values), list(RF.feature_importances_[RF.feature_importances_>0])]
 
 def gradient_boosting(X_train, X_test, y_train, y_test, classes, data):
-    tree_sizes = [5]
-    max_depth = 2
+    tree_sizes = [60]
+    max_depth = 3
     GB_mean_scores = np.zeros(len(tree_sizes))
     GB_std_scores = np.zeros(len(tree_sizes))
 
     for i in tqdm(range(len(tree_sizes))):
-        GB = GradientBoostingClassifier(n_estimators = tree_sizes[i], max_depth = max_depth)
+        GB = XGBClassifier(n_estimators = tree_sizes[i], max_depth = max_depth)
         
         GB_score = cross_val_score(GB, X_train, y_train, cv = 2)
 
