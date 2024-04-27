@@ -128,7 +128,7 @@ def gradient_boosting(X_train, X_test, y_train, y_test, classes, data):
 ## Cancer dataset
 df = pd.read_csv('./data/TCGAdata.txt', sep=" " ,header=0,index_col= 0)
 labels_df = pd.read_csv('./data/TCGAlabels', sep=" " ,header=0, index_col= 0)
-
+'''
 d= dict()
 X_train, X_test, y_train, y_test, classes = pre_process(df, labels_df, 0.8)
 
@@ -142,13 +142,9 @@ for error in [0,0.1,0.5,1,3]:
  
 df_1 = pd.DataFrame(data =d, index = ['Train', 'Cross','std', 'Test', 'Depth' , 'Class_errors', 'Important_labels', 'Importance_value'])
 df_1.to_csv('./data.csv', sep=" ")
-
+'''
 
 #Gradient boosting
-d= dict()
-X_train, X_test, y_train, y_test, classes = pre_process(df, labels_df, 0.8)
-5, 
-
 
 for error in [0,0.1,0.3,0.5,0.8,1]:
     X_train_noise, X_test_noise= noise(X_train, X_test, noise = error)
