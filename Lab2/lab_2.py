@@ -146,7 +146,7 @@ df_1.to_csv('./data.csv', sep=" ")
 
 #Gradient boosting
 d= dict()
-X_train, X_test, y_train, y_test = pre_process(df, labels_df, 0.8)
+X_train, X_test, y_train, y_test, classes = pre_process(df, labels_df, 0.8)
 5, 
 
 
