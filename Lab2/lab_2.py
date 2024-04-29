@@ -52,7 +52,8 @@ def random_forest(X_train, X_test, y_train, y_test, classes, data):
             RF_score = cross_val_score(RF, X_train, y_train, cv = 5)
 
             RF_mean_score = RF_score.mean()
-            RF_mean_scores[depth] = RF_mean_score
+            RF_mean_scores[i][j] = RF_mean_score
+            print(RF_mean_scores)
 
 
     max_index = np.unravel_index(RF_mean_scores.argmax(), RF_mean_scores.shape)
