@@ -82,7 +82,7 @@ def random_forest(X_train, X_test, y_train, y_test, classes, data):
     print("Test err: ", test_error)
     print("Class test error: ", er_clas)
     return [train_error, cross_val_err, RF_optimal_std, test_error, RF_optimal_depth, er_clas, list(data.columns[RF.feature_importances_>0].values), list(RF.feature_importances_[RF.feature_importances_>0])]
-
+'''
 def gradient_boosting(X_train, X_test, y_train, y_test, classes, data):
     tree_sizes = [60]
     max_depth = 3
@@ -123,7 +123,47 @@ def gradient_boosting(X_train, X_test, y_train, y_test, classes, data):
     print("Class test error: ", er_clas)
 
     return [train_error, cross_val_err, GB_optimal_std, test_error, GB_optimal_n_trees, er_clas, list(data.columns[GB.feature_importances_>0].values), list(GB.feature_importances_[GB.feature_importances_>0])]
+'''
+def gradient_boosting(X_train, X_test, y_train, y_test, classes, data):
+    tree_sizes = [50, 75, 100, 125, 150]
+    max_depth = 3
+    GB_mean_scores = np.zeros(len(tree_sizes))
+    GB_std_scores = np.zeros(len(tree_sizes))
 
+    for i in tqdm(range(len(tree_sizes))):
+        GB = XGBClassifier(n_estimators = tree_sizes[i], max_depth = max_depth)
+        
+        GB_score = cross_val_score(GB, X_train, y_train, cv = 2)
+
+        GB_mean_score = GB_score.mean()
+        GB_std = GB_score.std()
+        GB_mean_scores[i] = GB_mean_score
+        GB_std_scores[i] = GB_std
+
+
+    GB_optimal_n_trees = tree_sizes[np.where(GB_mean_scores==GB_mean_scores.max())[0][0]]
+    GB_optimal_std = GB_std_scores[np.where(GB_mean_scores==GB_mean_scores.max())[0][0]]
+    cross_val_err = 1 - max(GB_mean_scores)
+
+    GB.fit(X_train, y_train)
+    train_pred = GB.predict(X_train)
+    train_error = 1 - accuracy_score(y_train, train_pred)
+
+    test_pred = GB.predict(X_test)
+    test_error = 1 - accuracy_score(y_test, test_pred)
+
+    er_clas =dict()
+    for clas in classes:
+        er_clas[clas] = 1-accuracy_score(y_test[classes[clas]] ,GB.predict(X_test.iloc[classes[clas]]))
+
+    print("GB optimal number trees:", GB_optimal_n_trees)
+    print("Standard deviation of cross val error: ", GB_optimal_std)
+    print("Cross val err: ", cross_val_err)
+    print("Train err: ", train_error)
+    print("Test err: ", test_error)
+    print("Class test error: ", er_clas)
+
+    return [train_error, cross_val_err, GB_optimal_std, test_error, GB_optimal_n_trees, er_clas, list(data.columns[GB.feature_importances_>0].values), list(GB.feature_importances_[GB.feature_importances_>0])]
 
 
 ## Cancer dataset
