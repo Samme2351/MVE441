@@ -128,6 +128,7 @@ def gradient_boosting(X_train, X_test, y_train, y_test, classes, data):
 
 turns = 10
 for turn in range(turns):
+    print(f"Turn number {turn} starting")
     ## Cancer dataset
     df = pd.read_csv('./data/TCGAdata.txt', sep=" " ,header=0,index_col= 0)
     labels_df = pd.read_csv('./data/TCGAlabels', sep=" " ,header=0, index_col= 0)
