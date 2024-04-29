@@ -144,7 +144,7 @@ for turn in range(turns):
         d[f"Noise_{error:.1f}"] = random_forest(X_train_noise, X_test_noise, y_train, y_test, classes, df)
 
     
-    df_1 = pd.DataFrame(data = d, index = ['Train', 'Cross','std', 'Test', 'Trees', 'Depth' , 'Class_errors', 'Important_labels', 'Importance_value'])
+    df_1 = pd.DataFrame(data = d, index = ['Train', 'Cross', 'Test', 'Trees', 'Depth' , 'Class_errors', 'Important_labels', 'Importance_value'])
     df_1.to_csv(f'./data_{turn}.csv', sep=" ")
 
 
