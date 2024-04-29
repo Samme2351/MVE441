@@ -4,7 +4,6 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.metrics import accuracy_score 
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.preprocessing import LabelEncoder
 from tqdm import tqdm
 from xgboost import XGBClassifier
@@ -27,7 +26,6 @@ def pre_process(data, labels, train_size):
         else:
             classes[y_test[i]].append(i)
     
-    #print(X_test.iloc[classes['U']])
     
     return X_train, X_test, y_train, y_test, classes
 
@@ -53,11 +51,9 @@ def random_forest(X_train, X_test, y_train, y_test, classes, data):
 
             RF_mean_score = RF_score.mean()
             RF_mean_scores[i][j] = RF_mean_score
-            print(RF_mean_scores)
 
 
     max_index = np.unravel_index(RF_mean_scores.argmax(), RF_mean_scores.shape)
-    print(max_index)
     RF_optimal_n_trees = nr_trees[max_index[0]]
     RF_optimal_depth = depth[max_index[1]]
 
@@ -80,6 +76,7 @@ def random_forest(X_train, X_test, y_train, y_test, classes, data):
     print("Train err: ", train_error)
     print("Test err: ", test_error)
     print("Class test error: ", er_clas)
+    
     return [train_error, cross_val_err, test_error, RF_optimal_n_trees, RF_optimal_depth, er_clas, list(data.columns[RF.feature_importances_>0].values), list(RF.feature_importances_[RF.feature_importances_>0])]
 
 
@@ -97,10 +94,8 @@ def gradient_boosting(X_train, X_test, y_train, y_test, classes, data):
 
             GB_mean_score = GB_score.mean()
             GB_mean_scores[i][j] = GB_mean_score
-            print(GB_mean_scores)
 
     max_index = np.unravel_index(GB_mean_scores.argmax(), GB_mean_scores.shape)
-    print(max_index)
     GB_optimal_n_trees = nr_tree[max_index[0]]
     GB_optimal_learn_rate = learn_rate[max_index[1]]
     
@@ -142,7 +137,7 @@ for error in [0, 0.1, 0.5, 1, 3]:
     d[f"Noise_{error:.1f}"] = random_forest(X_train_noise, X_test_noise, y_train, y_test, classes, df)
 
  
-df_1 = pd.DataFrame(data =d, index = ['Train', 'Cross','std', 'Test', 'Trees', 'Depth' , 'Class_errors', 'Important_labels', 'Importance_value'])
+df_1 = pd.DataFrame(data = d, index = ['Train', 'Cross','std', 'Test', 'Trees', 'Depth' , 'Class_errors', 'Important_labels', 'Importance_value'])
 df_1.to_csv('./data.csv', sep=" ")
 
 
@@ -158,7 +153,7 @@ for error in [0, 0.1, 0.5, 1, 3]:
     d[f"Noise_{error:.1f}"] = gradient_boosting(X_train_noise, X_test_noise, y_train, y_test, classes, df)
 
 
-df_1 = pd.DataFrame(data =d, index = ['Train', 'Cross', 'Test', 'Trees', 'Learn_rate' , 'Class_errors', 'Important_labels', 'Importance_value'])
+df_1 = pd.DataFrame(data = d, index = ['Train', 'Cross', 'Test', 'Trees', 'Learn_rate' , 'Class_errors', 'Important_labels', 'Importance_value'])
 df_1.to_csv('./data_gb.csv', sep=" ")
 
 
@@ -171,13 +166,12 @@ X_train, X_test, y_train, y_test, classes = pre_process(df_images, labels_df_ima
 
 #Bagging
 d = dict()
-#d["Noise_0.0"] = random_forest(X_train, X_test, y_train, y_test, classes)
 for error in [0, 0.1, 0.5, 1, 3]:
     X_train_noise, X_test_noise = noise(X_train, X_test, noise = error)
     d[f"Noise_{error:.1f}"] = random_forest(X_train_noise, X_test_noise, y_train, y_test, classes, df_images)
 
  
-df_1 = pd.DataFrame(data =d, index = ['Train', 'Cross','Test','Trees',  'Depth' , 'Class_errors', 'Important_labels', 'Importance_value'])
+df_1 = pd.DataFrame(data = d, index = ['Train', 'Cross','Test','Trees',  'Depth' , 'Class_errors', 'Important_labels', 'Importance_value'])
 df_1.to_csv('./data_cat.csv', sep=" ")
 
 
