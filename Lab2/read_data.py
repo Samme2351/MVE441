@@ -5,10 +5,10 @@ import matplotlib.patches as mpatches
 labels = pd.read_csv("data.csv", sep=" " ,header=0, index_col=0)
 data = pd.read_csv("data.csv", sep=" " ,header=0, index_col=0)
 #print(data["Noise_0.0"][5][1:-1].split(", "))
-
+print(data)
 label_dic = dict()
 
-for i in [0.1, 0.5, 1, 3]:
+for i in [0.0, 0.1, 0.5, 1, 3]:
     labels = data[f"Noise_{i:.1f}"][4][2:-2].split("', '")
     for label in labels:
         if label in label_dic:
@@ -18,9 +18,9 @@ for i in [0.1, 0.5, 1, 3]:
 
 
 for i in [0, 0.1, 0.5, 1, 3]:
-    values = [float(val) for val in data[f"Noise_{i:.1f}"][5][1:-1].split(", ")]
+    values = [float(val) for val in data[f"Noise_{i:.1f}"][7][1:-1].split(", ")]
     #print(values)
-    print(sum([val>float('1.0e-04') for val in values]))
+    print(sum([val>float('1.0e-03') for val in values]))
 
 #print(sum([label_dic[label] == 4 for label in label_dic]))
 
