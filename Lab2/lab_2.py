@@ -81,7 +81,7 @@ def random_forest(X_train, X_test, y_train, y_test, classes, data):
 
 def gradient_boosting(X_train, X_test, y_train, y_test, classes, data):
     nr_tree = [50, 75] #, 100, 125, 150]
-    learn_rate = [0.1, 0.2, 0.3]
+    learn_rate = [0.1] #, 0.2, 0.3]
     max_depth = 3
     GB_mean_scores = np.zeros((len(nr_tree), len(learn_rate)))
     print(GB_mean_scores)
