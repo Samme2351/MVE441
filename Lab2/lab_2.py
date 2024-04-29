@@ -6,7 +6,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import GradientBoostingClassifier
 from tqdm import tqdm
-from xgboost import XGBClassifier
+#from xgboost import XGBClassifier
 
 
 
