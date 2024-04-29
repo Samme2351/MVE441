@@ -84,7 +84,7 @@ def random_forest(X_train, X_test, y_train, y_test, classes, data):
     return [train_error, cross_val_err, RF_optimal_std, test_error, RF_optimal_depth, er_clas, list(data.columns[RF.feature_importances_>0].values), list(RF.feature_importances_[RF.feature_importances_>0])]
 
 def gradient_boosting(X_train, X_test, y_train, y_test, classes, data):
-    tree_sizes = [5]
+    tree_sizes = [20]
     max_depth = 3
     GB_mean_scores = np.zeros(len(tree_sizes))
     GB_std_scores = np.zeros(len(tree_sizes))
