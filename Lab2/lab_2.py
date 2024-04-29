@@ -176,7 +176,7 @@ for turn in range(turns):
     d = dict()
     for error in [0, 0.1, 0.5, 1, 3]:
         #X_train_noise, X_test_noise = noise(X_train, X_test, noise = error)
-        d[f"Noise_{error:.1f}"] = random_forest(X_train_noise, X_test_noise, y_train, y_test, classes, df_images)
+        d[f"Noise_{error:.1f}"] = random_forest(X_train, X_test, y_train, y_test, classes, df_images)
 
     
     df_1 = pd.DataFrame(data = d, index = ['Train', 'Cross','Test','Trees',  'Depth' , 'Class_errors', 'Important_labels', 'Importance_value'])
@@ -188,7 +188,7 @@ for turn in range(turns):
     d = dict()
     for error in [0, 0.1, 0.5, 1, 3]:
         #X_train_noise, X_test_noise= noise(X_train, X_test, noise = error)
-        d[f"Noise_{error:.1f}"] = gradient_boosting(X_train_noise, X_test_noise, y_train, y_test, classes, df_images)
+        d[f"Noise_{error:.1f}"] = gradient_boosting(X_train, X_test, y_train, y_test, classes, df_images)
 
 
     df_1 = pd.DataFrame(data =d, index = ['Train', 'Cross', 'Test', 'Trees', 'Learn_rate' , 'Class_errors', 'Important_labels', 'Importance_value'])
