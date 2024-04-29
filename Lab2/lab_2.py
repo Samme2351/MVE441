@@ -167,19 +167,19 @@ labels_df_images = pd.read_csv('./data/Labels.csv')
 d_1= dict()
 X_train, X_test, y_train, y_test, classes = pre_process(df_images, labels_df_images, 0.8)
 
-
+'''
 #Bagging
 #d["Noise_0.0"] = random_forest(X_train, X_test, y_train, y_test, classes)
 for error in [0,0.1,0.5,1,3]:
     X_train_noise, X_test_noise = noise(X_train, X_test, noise = error)
     d_1[f"Noise_{error:.1f}"] = random_forest(X_train_noise, X_test_noise, y_train, y_test, classes, df_images)
 
- 
+
 df_1 = pd.DataFrame(data =d_1, index = ['Train', 'Cross','std', 'Test', 'Depth' , 'Class_errors', 'Important_labels', 'Importance_value'])
 df_1.to_csv('./data_cat.csv', sep=" ")
-
-
 '''
+
+
 #Gradient boosting
 
 
@@ -190,4 +190,3 @@ for error in [0,0.1,0.3,0.5,0.8,1]:
 
 df_1 = pd.DataFrame(data =d, index = ['Train', 'Cross','std', 'Test', 'Trees' , 'Class_errors', 'Important_labels', 'Importance_value'])
 df_1.to_csv('./data_gb_cat.csv', sep=" ")
-'''
