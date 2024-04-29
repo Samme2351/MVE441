@@ -82,15 +82,15 @@ def random_forest(X_train, X_test, y_train, y_test, classes, data):
     print("Test err: ", test_error)
     print("Class test error: ", er_clas)
     return [train_error, cross_val_err, RF_optimal_std, test_error, RF_optimal_depth, er_clas, list(data.columns[RF.feature_importances_>0].values), list(RF.feature_importances_[RF.feature_importances_>0])]
-'''
+
 def gradient_boosting(X_train, X_test, y_train, y_test, classes, data):
-    tree_sizes = [60]
+    tree_sizes = [5]
     max_depth = 3
     GB_mean_scores = np.zeros(len(tree_sizes))
     GB_std_scores = np.zeros(len(tree_sizes))
 
     for i in tqdm(range(len(tree_sizes))):
-        GB = XGBClassifier(n_estimators = tree_sizes[i], max_depth = max_depth)
+        GB = GradientBoostingClassifier(n_estimators = tree_sizes[i], max_depth = max_depth)
         
         GB_score = cross_val_score(GB, X_train, y_train, cv = 2)
 
@@ -165,7 +165,7 @@ def gradient_boosting(X_train, X_test, y_train, y_test, classes, data):
 
     return [train_error, cross_val_err, GB_optimal_std, test_error, GB_optimal_n_trees, er_clas, list(data.columns[GB.feature_importances_>0].values), list(GB.feature_importances_[GB.feature_importances_>0])]
 
-
+'''
 ## Cancer dataset
 df = pd.read_csv('./data/TCGAdata.txt', sep=" " ,header=0,index_col= 0)
 labels_df = pd.read_csv('./data/TCGAlabels', sep=" " ,header=0, index_col= 0)
