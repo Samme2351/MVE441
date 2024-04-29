@@ -76,7 +76,7 @@ def random_forest(X_train, X_test, y_train, y_test, classes, data):
     print("Train err: ", train_error)
     print("Test err: ", test_error)
     print("Class test error: ", er_clas)
-    
+
     return [train_error, cross_val_err, test_error, RF_optimal_n_trees, RF_optimal_depth, er_clas, list(data.columns[RF.feature_importances_>0].values), list(RF.feature_importances_[RF.feature_importances_>0])]
 
 
@@ -167,7 +167,7 @@ X_train, X_test, y_train, y_test, classes = pre_process(df_images, labels_df_ima
 #Bagging
 d = dict()
 for error in [0, 0.1, 0.5, 1, 3]:
-    X_train_noise, X_test_noise = noise(X_train, X_test, noise = error)
+    #X_train_noise, X_test_noise = noise(X_train, X_test, noise = error)
     d[f"Noise_{error:.1f}"] = random_forest(X_train_noise, X_test_noise, y_train, y_test, classes, df_images)
 
  
@@ -179,7 +179,7 @@ df_1.to_csv('./data_cat.csv', sep=" ")
 #Gradient boosting
 d = dict()
 for error in [0, 0.1, 0.5, 1, 3]:
-    X_train_noise, X_test_noise= noise(X_train, X_test, noise = error)
+    #X_train_noise, X_test_noise= noise(X_train, X_test, noise = error)
     d[f"Noise_{error:.1f}"] = gradient_boosting(X_train_noise, X_test_noise, y_train, y_test, classes, df_images)
 
 
