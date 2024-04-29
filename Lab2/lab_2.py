@@ -44,7 +44,7 @@ def random_forest(X_train, X_test, y_train, y_test, classes, data):
     RF_mean_scores = np.zeros((len(nr_trees), len(depth)))
 
     for i in tqdm(range(len(nr_trees))):
-        for j in tqdm(range(len(depth))):
+        for j in range(len(depth)):
             RF = RandomForestClassifier(n_estimators = nr_trees[i], max_depth=depth[j])
             
             RF_score = cross_val_score(RF, X_train, y_train, cv = 5)
@@ -90,7 +90,7 @@ def gradient_boosting(X_train, X_test, y_train, y_test, classes, data):
     GB_mean_scores = np.zeros((len(nr_tree), len(learn_rate)))
 
     for i in tqdm(range(len(nr_tree))):
-        for j in tqdm(range(len(learn_rate))):
+        for j in range(len(learn_rate)):
             GB = XGBClassifier(n_estimators = nr_tree[i], learning_rate = learn_rate[j], max_depth = max_depth)
             
             GB_score = cross_val_score(GB, X_train, y_train, cv = 5)
@@ -115,7 +115,7 @@ def gradient_boosting(X_train, X_test, y_train, y_test, classes, data):
 
     er_clas = dict()
     for clas in classes:
-        er_clas[clas] = 1-accuracy_score(y_test[classes[clas]] ,opt_GB.predict(X_test.iloc[classes[clas]]))
+        er_clas[clas] = 1-accuracy_score(y_test[classes[clas]], opt_GB.predict(X_test.iloc[classes[clas]]))
 
     print("GB optimal number trees:", GB_optimal_n_trees)
     print("GB optimal learning rate:", GB_optimal_learn_rate)
