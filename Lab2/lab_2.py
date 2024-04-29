@@ -59,16 +59,19 @@ def random_forest(X_train, X_test, y_train, y_test, classes, data):
 
     cross_val_err = 1 - RF_mean_scores[max_index]
 
-    RF.fit(X_train, y_train)
-    train_pred = RF.predict(X_train)
+
+    opt_RF = RandomForestClassifier(n_estimators = RF_optimal_n_trees, max_depth = RF_optimal_depth)
+
+    opt_RF.fit(X_train, y_train)
+    train_pred = opt_RF.predict(X_train)
     train_error = 1 - accuracy_score(y_train, train_pred)
 
-    test_pred = RF.predict(X_test)
+    test_pred = opt_RF.predict(X_test)
     test_error = 1 - accuracy_score(y_test, test_pred)
 
     er_clas = dict()
     for clas in classes:
-        er_clas[clas] = 1-accuracy_score(y_test[classes[clas]] ,RF.predict(X_test.iloc[classes[clas]]))
+        er_clas[clas] = 1-accuracy_score(y_test[classes[clas]] ,opt_RF.predict(X_test.iloc[classes[clas]]))
 
     print("RF optimal number of trees:", RF_optimal_n_trees)
     print("RF optimal depth:", RF_optimal_depth)
@@ -77,7 +80,7 @@ def random_forest(X_train, X_test, y_train, y_test, classes, data):
     print("Test err: ", test_error)
     print("Class test error: ", er_clas)
 
-    return [train_error, cross_val_err, test_error, RF_optimal_n_trees, RF_optimal_depth, er_clas, list(data.columns[RF.feature_importances_>0].values), list(RF.feature_importances_[RF.feature_importances_>0])]
+    return [train_error, cross_val_err, test_error, RF_optimal_n_trees, RF_optimal_depth, er_clas, list(data.columns[opt_RF.feature_importances_>0].values), list(opt_RF.feature_importances_[opt_RF.feature_importances_>0])]
 
 
 def gradient_boosting(X_train, X_test, y_train, y_test, classes, data):
@@ -101,16 +104,18 @@ def gradient_boosting(X_train, X_test, y_train, y_test, classes, data):
     
     cross_val_err = 1 - GB_mean_scores[max_index]
 
-    GB.fit(X_train, y_train)
-    train_pred = GB.predict(X_train)
+    opt_GB = XGBClassifier(n_estimators = GB_optimal_n_trees, learning_rate = GB_optimal_learn_rate, max_depth = max_depth)
+
+    opt_GB.fit(X_train, y_train)
+    train_pred = opt_GB.predict(X_train)
     train_error = 1 - accuracy_score(y_train, train_pred)
 
-    test_pred = GB.predict(X_test)
+    test_pred = opt_GB.predict(X_test)
     test_error = 1 - accuracy_score(y_test, test_pred)
 
     er_clas = dict()
     for clas in classes:
-        er_clas[clas] = 1-accuracy_score(y_test[classes[clas]] ,GB.predict(X_test.iloc[classes[clas]]))
+        er_clas[clas] = 1-accuracy_score(y_test[classes[clas]] ,opt_GB.predict(X_test.iloc[classes[clas]]))
 
     print("GB optimal number trees:", GB_optimal_n_trees)
     print("GB optimal learning rate:", GB_optimal_learn_rate)
@@ -119,7 +124,7 @@ def gradient_boosting(X_train, X_test, y_train, y_test, classes, data):
     print("Test err: ", test_error)
     print("Class test error: ", er_clas)
 
-    return [train_error, cross_val_err, test_error, GB_optimal_n_trees, GB_optimal_learn_rate, er_clas, list(data.columns[GB.feature_importances_>0].values), list(GB.feature_importances_[GB.feature_importances_>0])]
+    return [train_error, cross_val_err, test_error, GB_optimal_n_trees, GB_optimal_learn_rate, er_clas, list(data.columns[opt_GB.feature_importances_>0].values), list(opt_GB.feature_importances_[opt_GB.feature_importances_>0])]
 
 
 ## Cancer dataset
