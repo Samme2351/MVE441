@@ -126,10 +126,10 @@ def gradient_boosting(X_train, X_test, y_train, y_test, classes, data):
 
     return [train_error, cross_val_err, test_error, GB_optimal_n_trees, GB_optimal_learn_rate, er_clas, list(data.columns[opt_GB.feature_importances_>0].values), list(opt_GB.feature_importances_[opt_GB.feature_importances_>0])]
 
-turns = 1
-for turn in range(turns):
+turns = 50
+for turn in range(1,turns+1):
     print(f"Turn number {turn} starting")
-    '''
+
     ## Cancer dataset
     df = pd.read_csv('./data/TCGAdata.txt', sep=" " ,header=0,index_col= 0)
     labels_df = pd.read_csv('./data/TCGAlabels', sep=" " ,header=0, index_col= 0)
@@ -164,7 +164,7 @@ for turn in range(turns):
     df_1 = pd.DataFrame(data = d, index = ['Train', 'Cross', 'Test', 'Trees', 'Learn_rate' , 'Class_errors', 'Important_labels', 'Importance_value'])
     df_1.to_csv(f'./data_gb_{turn}.csv', sep=" ")
 
-'''
+
     ## Cats and dogs data set
     df_images = pd.read_csv('./data/CATSnDOGS.csv', sep="," ,header=0,index_col= 0)
     labels_df_images = pd.read_csv('./data/Labels.csv')
