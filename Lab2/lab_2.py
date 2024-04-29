@@ -80,11 +80,10 @@ def random_forest(X_train, X_test, y_train, y_test, classes, data):
 
 
 def gradient_boosting(X_train, X_test, y_train, y_test, classes, data):
-    nr_tree = [50, 75] #, 100, 125, 150]
-    learn_rate = [0.1] #, 0.2, 0.3]
+    nr_tree = [50, 75, 100, 125, 150]
+    learn_rate = [0.1, 0.2, 0.3]
     max_depth = 3
     GB_mean_scores = np.zeros((len(nr_tree), len(learn_rate)))
-    print(GB_mean_scores)
 
     for i in tqdm(range(len(nr_tree))):
         for j in tqdm(range(len(learn_rate))):
@@ -116,6 +115,7 @@ def gradient_boosting(X_train, X_test, y_train, y_test, classes, data):
         er_clas[clas] = 1-accuracy_score(y_test[classes[clas]] ,GB.predict(X_test.iloc[classes[clas]]))
 
     print("GB optimal number trees:", GB_optimal_n_trees)
+    print("GB optimal learning rate:", GB_optimal_learn_rate)
     print("Cross val err: ", cross_val_err)
     print("Train err: ", train_error)
     print("Test err: ", test_error)
@@ -150,7 +150,7 @@ y_train = le.transform(y_train)
 y_test = le.transform(y_test)
 
 d = dict()
-for error in [0,0.1,0.3,0.5,0.8,1]:
+for error in [0, 0.1, 0.5, 1, 3]:
     X_train_noise, X_test_noise= noise(X_train, X_test, noise = error)
     d[f"Noise_{error:.1f}"] = gradient_boosting(X_train_noise, X_test_noise, y_train, y_test, classes, df)
 
