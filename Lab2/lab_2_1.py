@@ -92,7 +92,7 @@ def gradient_boosting(X_train, X_test, y_train, y_test, classes, data):
     for i in tqdm(range(len(tree_sizes))):
         GB = XGBClassifier(n_estimators = tree_sizes[i], max_depth = max_depth)
         
-        GB_score = cross_val_score(GB, X_train, y_train, cv = 2)
+        GB_score = cross_val_score(GB, X_train, y_train, cv = 5)
 
         GB_mean_score = GB_score.mean()
         GB_std = GB_score.std()
@@ -143,7 +143,7 @@ for error in [0,0.1,0.5,1,3]:
  
 df_1 = pd.DataFrame(data =d, index = ['Train', 'Cross','std', 'Test', 'Depth' , 'Class_errors', 'Important_labels', 'Importance_value'])
 df_1.to_csv('./data.csv', sep=" ")
-'''
+
 
 
 #Gradient boosting
@@ -155,18 +155,18 @@ for error in [0,0.1,0.3,0.5,0.8,1]:
 
 df_1 = pd.DataFrame(data =d, index = ['Train', 'Cross','std', 'Test', 'Trees' , 'Class_errors', 'Important_labels', 'Importance_value'])
 df_1.to_csv('./data_gb.csv', sep=" ")
-'''
 
+
+'''
 ## Cats and dogs data set
 df_images = pd.read_csv('./data/CATSnDOGS.csv', sep="," ,header=0,index_col= 0)
 labels_df_images = pd.read_csv('./data/Labels.csv')
 
 
-
+'''
 #Noise = 0
 d_1= dict()
 X_train, X_test, y_train, y_test, classes = pre_process(df_images, labels_df_images, 0.8)
-
 
 #Bagging
 #d["Noise_0.0"] = random_forest(X_train, X_test, y_train, y_test, classes)
@@ -174,12 +174,12 @@ for error in [0,0.1,0.5,1,3]:
     X_train_noise, X_test_noise = noise(X_train, X_test, noise = error)
     d_1[f"Noise_{error:.1f}"] = random_forest(X_train_noise, X_test_noise, y_train, y_test, classes, df_images)
 
- 
+
 df_1 = pd.DataFrame(data =d_1, index = ['Train', 'Cross','std', 'Test', 'Depth' , 'Class_errors', 'Important_labels', 'Importance_value'])
 df_1.to_csv('./data_cat.csv', sep=" ")
 '''
 
-'''
+
 #Gradient boosting
 
 
@@ -190,4 +190,3 @@ for error in [0,0.1,0.3,0.5,0.8,1]:
 
 df_1 = pd.DataFrame(data =d, index = ['Train', 'Cross','std', 'Test', 'Trees' , 'Class_errors', 'Important_labels', 'Importance_value'])
 df_1.to_csv('./data_gb_cat.csv', sep=" ")
-'''
