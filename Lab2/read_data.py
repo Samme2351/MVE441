@@ -1,6 +1,11 @@
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
+
+a= np.zeros((4,5))
+print(a[(1,2)])
+
 
 labels = pd.read_csv("data.csv", sep=" " ,header=0, index_col=0)
 data = pd.read_csv("data.csv", sep=" " ,header=0, index_col=0)
