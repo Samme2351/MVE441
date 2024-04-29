@@ -136,7 +136,7 @@ X_train, X_test, y_train, y_test, classes = pre_process(df, labels_df, 0.8)
 
 #Bagging
 d = dict()
-for error in [0,0.1,0.5,1,3]:
+for error in [0, 0.1, 0.5, 1, 3]:
     X_train_noise, X_test_noise= noise(X_train, X_test, noise = error)
     d[f"Noise_{error:.1f}"] = random_forest(X_train_noise, X_test_noise, y_train, y_test, classes, df)
 
@@ -171,7 +171,7 @@ X_train, X_test, y_train, y_test, classes = pre_process(df_images, labels_df_ima
 #Bagging
 d = dict()
 #d["Noise_0.0"] = random_forest(X_train, X_test, y_train, y_test, classes)
-for error in [0,0.1,0.5,1,3]:
+for error in [0, 0.1, 0.5, 1, 3]:
     X_train_noise, X_test_noise = noise(X_train, X_test, noise = error)
     d[f"Noise_{error:.1f}"] = random_forest(X_train_noise, X_test_noise, y_train, y_test, classes, df_images)
 
@@ -183,7 +183,7 @@ df_1.to_csv('./data_cat.csv', sep=" ")
 
 #Gradient boosting
 d = dict()
-for error in [0,0.1,0.3,0.5,0.8,1]:
+for error in [0, 0.1, 0.5, 1, 3]:
     X_train_noise, X_test_noise= noise(X_train, X_test, noise = error)
     d[f"Noise_{error:.1f}"] = gradient_boosting(X_train_noise, X_test_noise, y_train, y_test, classes, df_images)
 
