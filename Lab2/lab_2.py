@@ -126,70 +126,70 @@ def gradient_boosting(X_train, X_test, y_train, y_test, classes, data):
 
     return [train_error, cross_val_err, test_error, GB_optimal_n_trees, GB_optimal_learn_rate, er_clas, list(data.columns[opt_GB.feature_importances_>0].values), list(opt_GB.feature_importances_[opt_GB.feature_importances_>0])]
 
-turns = 50
-for turn in range(3,turns+1):
-    print(f"Turn number {turn} starting")
+turns = 4
+#for turn in range(3,turns+1):
+    #print(f"Turn number {turn} starting")
 
-    ## Cancer dataset
-    df = pd.read_csv('./data/TCGAdata.txt', sep=" " ,header=0,index_col= 0)
-    labels_df = pd.read_csv('./data/TCGAlabels', sep=" " ,header=0, index_col= 0)
-
-
-    X_train, X_test, y_train, y_test, classes = pre_process(df, labels_df, 0.8)
+## Cancer dataset
+df = pd.read_csv('./data/TCGAdata.txt', sep=" " ,header=0,index_col= 0)
+labels_df = pd.read_csv('./data/TCGAlabels', sep=" " ,header=0, index_col= 0)
 
 
-    #Bagging
-    d = dict()
-    for error in [0, 0.1, 0.5, 1, 3]:
-        X_train_noise, X_test_noise= noise(X_train, X_test, noise = error)
-        d[f"Noise_{error:.1f}"] = random_forest(X_train_noise, X_test_noise, y_train, y_test, classes, df)
-
-    
-    df_1 = pd.DataFrame(data = d, index = ['Train', 'Cross', 'Test', 'Trees', 'Depth' , 'Class_errors', 'Important_labels', 'Importance_value'])
-    df_1.to_csv(f'./data_{turn}.csv', sep=" ")
+X_train, X_test, y_train, y_test, classes = pre_process(df, labels_df, 0.8)
 
 
-    #Gradient boosting
-    le = LabelEncoder()
-    le.fit(y_train)
-    y_train = le.transform(y_train)
-    y_test = le.transform(y_test)
-
-    d = dict()
-    for error in [0, 0.1, 0.5, 1, 3]:
-        X_train_noise, X_test_noise= noise(X_train, X_test, noise = error)
-        d[f"Noise_{error:.1f}"] = gradient_boosting(X_train_noise, X_test_noise, y_train, y_test, classes, df)
+#Bagging
+d = dict()
+for error in [0, 0.1, 0.5, 1, 3]:
+    X_train_noise, X_test_noise= noise(X_train, X_test, noise = error)
+    d[f"Noise_{error:.1f}"] = random_forest(X_train_noise, X_test_noise, y_train, y_test, classes, df)
 
 
-    df_1 = pd.DataFrame(data = d, index = ['Train', 'Cross', 'Test', 'Trees', 'Learn_rate' , 'Class_errors', 'Important_labels', 'Importance_value'])
-    df_1.to_csv(f'./data_gb_{turn}.csv', sep=" ")
+df_1 = pd.DataFrame(data = d, index = ['Train', 'Cross', 'Test', 'Trees', 'Depth' , 'Class_errors', 'Important_labels', 'Importance_value'])
+df_1.to_csv(f'./data_{turn}.csv', sep=" ")
 
 
-    ## Cats and dogs data set
-    df_images = pd.read_csv('./data/CATSnDOGS.csv', sep="," ,header=0,index_col= 0)
-    labels_df_images = pd.read_csv('./data/Labels.csv')
+#Gradient boosting
+le = LabelEncoder()
+le.fit(y_train)
+y_train = le.transform(y_train)
+y_test = le.transform(y_test)
 
-    X_train, X_test, y_train, y_test, classes = pre_process(df_images, labels_df_images, 0.8)
-
-
-    #Bagging
-    d = dict()
-    for error in [0, 0.1, 0.5, 1, 3]:
-        #X_train_noise, X_test_noise = noise(X_train, X_test, noise = error)
-        d[f"Noise_{error:.1f}"] = random_forest(X_train, X_test, y_train, y_test, classes, df_images)
-
-    
-    df_1 = pd.DataFrame(data = d, index = ['Train', 'Cross','Test','Trees',  'Depth' , 'Class_errors', 'Important_labels', 'Importance_value'])
-    df_1.to_csv(f'./data_cat_{turn}.csv', sep=" ")
+d = dict()
+for error in [0, 0.1, 0.5, 1, 3]:
+    X_train_noise, X_test_noise= noise(X_train, X_test, noise = error)
+    d[f"Noise_{error:.1f}"] = gradient_boosting(X_train_noise, X_test_noise, y_train, y_test, classes, df)
 
 
-
-    #Gradient boosting
-    d = dict()
-    for error in [0, 0.1, 0.5, 1, 3]:
-        #X_train_noise, X_test_noise= noise(X_train, X_test, noise = error)
-        d[f"Noise_{error:.1f}"] = gradient_boosting(X_train, X_test, y_train, y_test, classes, df_images)
+df_1 = pd.DataFrame(data = d, index = ['Train', 'Cross', 'Test', 'Trees', 'Learn_rate' , 'Class_errors', 'Important_labels', 'Importance_value'])
+df_1.to_csv(f'./data_gb_{turn}.csv', sep=" ")
 
 
-    df_1 = pd.DataFrame(data =d, index = ['Train', 'Cross', 'Test', 'Trees', 'Learn_rate' , 'Class_errors', 'Important_labels', 'Importance_value'])
-    df_1.to_csv(f'./data_gb_cat_{turn}.csv', sep=" ")
+## Cats and dogs data set
+df_images = pd.read_csv('./data/CATSnDOGS.csv', sep="," ,header=0,index_col= 0)
+labels_df_images = pd.read_csv('./data/Labels.csv')
+
+X_train, X_test, y_train, y_test, classes = pre_process(df_images, labels_df_images, 0.8)
+
+
+#Bagging
+d = dict()
+for error in [0, 0.1, 0.5, 1, 3]:
+    #X_train_noise, X_test_noise = noise(X_train, X_test, noise = error)
+    d[f"Noise_{error:.1f}"] = random_forest(X_train, X_test, y_train, y_test, classes, df_images)
+
+
+df_1 = pd.DataFrame(data = d, index = ['Train', 'Cross','Test','Trees',  'Depth' , 'Class_errors', 'Important_labels', 'Importance_value'])
+df_1.to_csv(f'./data_cat_{turn}.csv', sep=" ")
+
+
+
+#Gradient boosting
+d = dict()
+for error in [0, 0.1, 0.5, 1, 3]:
+    #X_train_noise, X_test_noise= noise(X_train, X_test, noise = error)
+    d[f"Noise_{error:.1f}"] = gradient_boosting(X_train, X_test, y_train, y_test, classes, df_images)
+
+
+df_1 = pd.DataFrame(data =d, index = ['Train', 'Cross', 'Test', 'Trees', 'Learn_rate' , 'Class_errors', 'Important_labels', 'Importance_value'])
+df_1.to_csv(f'./data_gb_cat_{turn}.csv', sep=" ")
