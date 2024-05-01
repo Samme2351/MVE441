@@ -144,4 +144,4 @@ for ax in axs.flat:
 location = 0 # For the best location
 legend_drawn_flag = True
 plt.legend(["Training error", "Cross-val error", "Test error"], loc=0, frameon=legend_drawn_flag)
-#plt.show()
+plt.show()
