@@ -3,14 +3,74 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
-a= np.zeros((4,5))
-print(a[(1,2)])
 
-
-labels = pd.read_csv("data.csv", sep=" " ,header=0, index_col=0)
-data = pd.read_csv("data.csv", sep=" " ,header=0, index_col=0)
+dat = 20
+data = []
+data_gb = []
+data_cat =[]
+for i in range(dat):
+    labels = pd.read_csv("./Results/data_0.csv", sep=" " ,header=0, index_col=0)
+    data.append(pd.read_csv(f"./Results/data_{i}.csv", sep=" " ,header=0, index_col=0)) 
+    data_gb.append(pd.read_csv(f"./Results/data_gb_{i}.csv", sep=" " ,header=0, index_col=0))
+    data_cat.append(pd.read_csv(f"./Results/data_cat_{i}.csv", sep=" " ,header=0, index_col=0))
 #print(data["Noise_0.0"][5][1:-1].split(", "))
-print(data)
+
+df = pd.read_csv('./data/TCGAdata.txt', sep=" " ,header=0, index_col= 0)
+
+
+## Feature importance
+for noise in [0.0, 0.1, 0.5, 1.0, 3.0]:
+    importance = pd.DataFrame(np.zeros(2000), df.columns).T # Total value of importance
+    imp_labels = pd.DataFrame(np.zeros(2000), df.columns).T # How often Each feature had non-zero importance
+    for d in data:
+        labels = d[f"Noise_{noise:.1f}"][6][2:-2].split("', '")
+        values = [float(val) for val in d[f"Noise_{noise:.1f}"][7][1:-1].split(", ")]
+        imp_labels.loc[:,labels] += np.ones(len(labels))
+        importance.loc[:, labels] += values
+            
+    print(imp_labels)
+    print(importance)
+    print(f"For error level {noise:.1f} we have")
+    for i in range(0,21):
+        print(sum(imp_labels.iloc[0]==i), f" features appeared {i} times")
+
+
+
+
+#plot error vs noise level
+errors = data[0].iloc[0:3].astype(float)
+errors_gb = data_gb[0].iloc[0:3].astype(float)
+for i in range(1,dat):
+    errors += data[i].iloc[0:3].astype(float)
+    errors_gb += data_gb[i].iloc[0:3].astype(float)
+
+errors = errors/dat
+errors_gb = errors_gb/dat
+
+x = [0.0, 0.1, 0.5, 1.0, 3.0]
+fig, axs = plt.subplots(1,2)
+s = 0
+color = ["blue", "green", "red", "purple", "pink", "black"]
+
+for i in range(3):
+    axs[0].plot(x, errors.iloc[i].to_numpy()) 
+    axs[1].plot(x, errors_gb.iloc[i].to_numpy()) 
+axs[0].set_title("Random Forest")
+axs[1].set_title("XGBoost")
+
+for ax in axs.flat:
+    ax.set(xlabel='Standard deviation of noise', ylabel='Error',ylim =[0,0.45] )
+location = 0 # For the best location
+legend_drawn_flag = True
+plt.legend(["Training error", "Cross-val error", "Test error"], loc=0, frameon=legend_drawn_flag)
+#plt.show()
+
+
+
+
+
+
+'''
 label_dic = dict()
 
 for i in [0.0, 0.1, 0.5, 1, 3]:
@@ -28,7 +88,7 @@ for i in [0, 0.1, 0.5, 1, 3]:
     print(sum([val>float('1.0e-03') for val in values]))
 
 #print(sum([label_dic[label] == 4 for label in label_dic]))
-
+'''
 
 
 
