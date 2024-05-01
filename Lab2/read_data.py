@@ -26,7 +26,7 @@ x = [0.0, 0.1, 0.5, 1.0, 3.0]
 for noise in x:
     dic = dict()
     for i in range(dat):
-        for j in data[i].iloc[5][f"Noise_{noise:.1f}"].split(","): #data or data_gb
+        for j in data_gb[i].iloc[5][f"Noise_{noise:.1f}"].split(","): #data or data_gb
             clas = j.split(': ')
             try:
                 flo = float(clas[1])
@@ -47,7 +47,7 @@ for noise in x:
 
 for i in range(6):
     plt.plot(x,test[i], color = color[i])
-    plt.title("Random Forest")
+    plt.title("XGBoost")
 
 plt.xlabel('Standard deviation of noise')
 plt.ylabel('Error')
