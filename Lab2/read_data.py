@@ -19,6 +19,46 @@ for i in range(dat):
 df = pd.read_csv('./data/TCGAdata.txt', sep=" " ,header=0, index_col= 0)
 df_cat = pd.read_csv('./data/CATSnDOGS.csv', sep="," ,header=0)
 
+## Class errors
+color = ["blue", "green", "red", "purple", "pink", "black"]
+test = [[],[],[],[],[],[]]
+x = [0.0, 0.1, 0.5, 1.0, 3.0]
+for noise in x:
+    dic = dict()
+    for i in range(dat):
+        for j in data[i].iloc[5][f"Noise_{noise:.1f}"].split(","): #data or data_gb
+            clas = j.split(': ')
+            try:
+                flo = float(clas[1])
+            except:
+                flo = float(clas[1][:-1])
+            if clas[0][2:-1] not in dic:
+                dic[clas[0][2:-1]] = flo
+            else:
+                dic[clas[0][2:-1]] += flo
+
+    for clas in dic:
+        dic[clas] = dic[clas]/20
+    print(f"For noise level {noise}", dic)
+
+    for i in range(len(dic)):
+        classes = list(dic)
+        test[i].append(dic[classes[i]])
+
+for i in range(6):
+    plt.plot(x,test[i], color = color[i])
+    plt.title("Random Forest")
+
+plt.xlabel('Standard deviation of noise')
+plt.ylabel('Error')
+plt.ylim([0,1])
+location = 0 # For the best location
+legend_drawn_flag = True
+plt.legend(list(dic), loc=0, frameon=legend_drawn_flag)
+plt.show()
+
+
+
 
 ## Feature importance
 amount = 0
@@ -40,13 +80,12 @@ for noise in [0.0, 0.1, 0.5, 1.0, 3.0]:
         imp_labels.loc[:,labels] += np.ones(len(labels))
         importance.loc[:, labels] += values
     mean_imp = importance/dat
-    #print(imp_labels)
-    #print(importance)
-    #print(mean_imp)
 
 
-    print(f"For error level {noise:.1f} we have")
+
+    
     if amount == True:
+        print(f"For error level {noise:.1f} we have")
         for i in range(0,21):
             print(sum(imp_labels.iloc[0]==i), f" features appeared {i} times")
 
@@ -55,7 +94,6 @@ for noise in [0.0, 0.1, 0.5, 1.0, 3.0]:
         plt.plot(x, mean_imp.iloc[0])
         plt.show()
 
-    #print(sum(importance.iloc[0]>float('1e-3')))
 
 
 
@@ -69,7 +107,6 @@ for i in range(dat):
         for k in range(5):
             std[s].append(data[i].iloc[1:3].astype(float).to_numpy()[j][k])
             std_gb[s].append(data_gb[i].iloc[1:3].astype(float).to_numpy()[j][k])
-            #print(data[i].iloc[1:3].astype(float).to_numpy()[j][k])
             s += 1
 
 for i in range(10):
@@ -107,4 +144,4 @@ for ax in axs.flat:
 location = 0 # For the best location
 legend_drawn_flag = True
 plt.legend(["Training error", "Cross-val error", "Test error"], loc=0, frameon=legend_drawn_flag)
-plt.show()
+#plt.show()
