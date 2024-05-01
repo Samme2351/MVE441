@@ -22,7 +22,7 @@ df = pd.read_csv('./data/TCGAdata.txt', sep=" " ,header=0, index_col= 0)
 for noise in [0.0, 0.1, 0.5, 1.0, 3.0]:
     importance = pd.DataFrame(np.zeros(2000), df.columns).T # Total value of importance
     imp_labels = pd.DataFrame(np.zeros(2000), df.columns).T # How often Each feature had non-zero importance
-    for d in data:
+    for d in data_gb: #Change to data or data_gb
         labels = d[f"Noise_{noise:.1f}"][6][2:-2].split("', '")
         values = [float(val) for val in d[f"Noise_{noise:.1f}"][7][1:-1].split(", ")]
         imp_labels.loc[:,labels] += np.ones(len(labels))
