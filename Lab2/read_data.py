@@ -47,7 +47,7 @@ for noise in x:
 
 for i in range(6):
     plt.plot(x,test[i], color = color[i])
-    plt.title("XGBoost")
+    plt.title("XGBoost") #Or Randomforest
 
 plt.xlabel('Standard deviation of noise')
 plt.ylabel('Error')
