@@ -25,12 +25,6 @@ def plot_ind(daf):
 pictures = 0
 com_errs = 0
 
-'''
-for i in range(199):
-    plt.imshow(df.iloc[i].to_numpy().reshape(64,64).transpose(), cmap=colormaps['bone'])
-    plt.title(f"This is picture {i+2} and is {animal[labels_df.at[int(i),'x']]}")
-    plt.show()
-'''
 
 #Show pictures
 if pictures == 1:

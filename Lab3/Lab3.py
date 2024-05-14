@@ -55,43 +55,60 @@ XGB_mat = np.zeros((2,2))
 svc_mat = np.zeros((2,2))
 nn_mat = np.zeros((2,2))
 
-iter = 10
-for j in tqdm(range(iter)):
-    x_train, x_test, y_train, y_test = pre_process(df, labels_df, 0.7)
-    print(x_train.to_numpy().shape)
+x_train, x_test, y_train, y_test = pre_process(df, labels_df, 0.7)
+##Neural network
 
-    ##Neural network
+model = nn.Sequential(
+nn.Linear(4096, 500),
+nn.Tanh(),
+nn.Linear(500,20),
+nn.Tanh(),
+nn.Linear(20, 8),
+nn.Tanh(),
+nn.Linear(8, 2),
+nn.Softmax(dim=1))
 
-    model = nn.Sequential(
-    nn.Linear(4096, 500),
-    nn.ReLU(),
-    nn.Linear(500,8),
-    nn.ReLU(),
-    nn.Linear(8, 2),
-    nn.Softmax(dim=1))
-    
 
-    loss_fn = nn.BCELoss()
-    optimizer = optim.SGD(model.parameters(), lr=0.001)
-    x_nn = torch.tensor(x_train.to_numpy(), dtype=torch.float32, requires_grad = True)
-    y_nn =torch.tensor(y_train, dtype=torch.float32, requires_grad = True)
+loss_fn = nn.BCEWithLogitsLoss()
+optimizer = optim.Adam(model.parameters(), lr=0.1)
+x_nn = torch.tensor(x_train.to_numpy(), dtype=torch.float32, requires_grad = True)
+y_nn = torch.tensor(y_train, dtype=torch.float32, requires_grad = True)
 
-    '''
-    for epoch in range(100):
-        y_pred = model(x_nn)
-        print(y_pred)
+x_test_nn = torch.tensor(x_test.to_numpy(), dtype=torch.float32, requires_grad = True)
+y_test_nn = torch.tensor(y_test, dtype=torch.float32, requires_grad = True)
+
+
+for epoch in range(10):
+    for i in range(2):
+        x_1 = x_nn[i*69:(i+1)*69]
+        y_1 = y_nn[i*69:(i+1)*69]
+        y_pred = model(x_1)
         y = []
         for sub_list in y_pred:
             y.append(sub_list.argmax(dim=0).item())
-        print(torch.tensor(y))
-        print(y_nn)
-        loss = loss_fn(torch.tensor(y, dtype=torch.float32), y_nn)
+
+        loss = loss_fn(torch.tensor(y, dtype=torch.float32), y_1)
+
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()    
-        print(f'Finished epoch {epoch}, latest loss {loss}')
+    print(f'Finished epoch {epoch}, latest loss {loss}')
 
-    '''
+
+with torch.no_grad():
+    y_pred = model(x_test_nn)
+y = []
+for sub_list in y_pred:
+    y.append(sub_list.argmax(dim=0).item())
+accuracy = sum(torch.tensor(y) == y_test_nn)/len(y_test)
+print(f"Accuracy {accuracy}")
+
+
+
+iter = 10
+for j in tqdm(range(iter)):
+    x_train, x_test, y_train, y_test = pre_process(df, labels_df, 0.7)
+
     ## SVC
     svc = SVC()
     classifier(svc, svc_mat, svc_failures)
