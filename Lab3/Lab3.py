@@ -25,12 +25,6 @@ def pre_process(data, labels, train_size):
     #Split data into training and test data
     x_train, x_test, y_train, y_test = train_test_split(data, labels.values.ravel(), test_size=1-train_size)
 
-    '''
-    scaler = StandardScaler()
-    x_train = pd.DataFrame(scaler.fit_transform(x_train), columns=x_train.columns)
-    x_test = pd.DataFrame(scaler.transform(x_test), columns=x_test.columns)
-    '''
-
     return x_train, x_test, y_train, y_test
 
 def classifier(model, mat, failures):
@@ -53,11 +47,13 @@ LR_failures = dict()
 knn_failures = dict()
 XGB_failures = dict()
 svc_failures = dict()
+nn_failures = dict()
 
 LR_mat = np.zeros((2,2))
 knn_mat = np.zeros((2,2))
 XGB_mat = np.zeros((2,2))
 svc_mat = np.zeros((2,2))
+nn_mat = np.zeros((2,2))
 
 iter = 10
 for j in tqdm(range(iter)):
@@ -65,7 +61,7 @@ for j in tqdm(range(iter)):
     print(x_train.to_numpy().shape)
 
     ##Neural network
-    
+
     model = nn.Sequential(
     nn.Linear(4096, 500),
     nn.ReLU(),
@@ -75,26 +71,27 @@ for j in tqdm(range(iter)):
     nn.Softmax(dim=1))
     
 
-    loss_fn = nn.LogSoftmax()
-    optimizer = optim.SGD(model.parameters(), lr=0.01)
-    x_nn = torch.tensor(x_train.to_numpy(), dtype=torch.float32)
-    y_nn =torch.tensor(y_train, dtype=torch.float32)
-    print(x_nn)
+    loss_fn = nn.BCELoss()
+    optimizer = optim.SGD(model.parameters(), lr=0.001)
+    x_nn = torch.tensor(x_train.to_numpy(), dtype=torch.float32, requires_grad = True)
+    y_nn =torch.tensor(y_train, dtype=torch.float32, requires_grad = True)
 
-
+    '''
     for epoch in range(100):
         y_pred = model(x_nn)
         print(y_pred)
         y = []
         for sub_list in y_pred:
             y.append(sub_list.argmax(dim=0).item())
-        print(y)
-        loss = loss_fn(y, y_nn)
+        print(torch.tensor(y))
+        print(y_nn)
+        loss = loss_fn(torch.tensor(y, dtype=torch.float32), y_nn)
         optimizer.zero_grad()
         loss.backward()
-        optimizer.step()
+        optimizer.step()    
         print(f'Finished epoch {epoch}, latest loss {loss}')
 
+    '''
     ## SVC
     svc = SVC()
     classifier(svc, svc_mat, svc_failures)
