@@ -3,7 +3,7 @@ import numpy as np
 from tqdm import tqdm
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import confusion_matrix, accuracy_score
 from sklearn.svm import SVC
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 import matplotlib.pyplot as plt
@@ -27,11 +27,11 @@ def pre_process(data, labels, train_size):
 
     return x_train, x_test, y_train, y_test
 
-def classifier(model, mat, failures):
+def classifier(model, mat, failures, acc, name):
     model.fit(x_train, y_train)
     y_pred = model.predict(x_test)
 
-    acc = accuracy(y_pred, y_test)
+    acc[name] += accuracy_score(y_true=y_test, y_pred=y_pred)
     mat += confusion_matrix(y_true=y_test, y_pred=y_pred)
 
     fails = y_pred!=y_test
@@ -39,10 +39,12 @@ def classifier(model, mat, failures):
         if i != 0:
             failures[i] = failures.get(i,0) + 1
 
-    return model, mat, failures
+    return model, mat, failures, acc
+
 
 def reverse_sort(dictionary):
     return dict(sorted(dictionary.items(), key=lambda item: item[1], reverse=True))
+
 
 LR_failures = dict()
 knn_failures = dict()
@@ -56,9 +58,61 @@ XGB_mat = np.zeros((2,2))
 svc_mat = np.zeros((2,2))
 LDA_mat = np.zeros((2,2))
 
+acc = {"LR": 0, "knn": 0, "XGB": 0, "svc": 0, "LDA": 0}
+LR_acc = 0
+knn_acc = 0
+XGB_acc = 0
+SVC_acc = 0
+LDA_acc = 0
+
+
+
+iter = 1
+for j in tqdm(range(iter)):
+    x_train, x_test, y_train, y_test = pre_process(df, labels_df, 0.7)
+    ## LDA
+    LDA = LinearDiscriminantAnalysis()
+    classifier(LDA, LDA_mat, LDA_failures, acc, "LDA")
+
+    ## SVC
+    svc = SVC()
+    classifier(svc, svc_mat, svc_failures, acc, "svc")
+
+    ## XGBoost
+    XGB = XGBClassifier(n_estimators = 100, learning_rate = 0.3)
+    classifier(XGB, XGB_mat, XGB_failures, acc, "XGB")
+
+
+    ## Logistic regression
+    LR = LogisticRegression(penalty='l1', solver='liblinear', max_iter=300)
+    classifier(LR, LR_mat, LR_failures, acc, "LR")
+
+    ## KNN
+    knn = KNeighborsClassifier(n_neighbors=5)
+    classifier(knn, knn_mat, knn_failures, acc, "knn")
+
+
+pd.DataFrame(data = reverse_sort(knn_failures), index=[0]).to_csv('./data_knn', sep = " ")
+pd.DataFrame(data = reverse_sort(LR_failures), index=[0]).to_csv('./data_LR', sep = " ")
+pd.DataFrame(data = reverse_sort(XGB_failures), index=[0]).to_csv('./data_XGB', sep = " ")
+pd.DataFrame(data = reverse_sort(svc_failures), index=[0]).to_csv('./data_svc', sep = " " )
+pd.DataFrame(data = reverse_sort(LDA_failures), index=[0]).to_csv('./data_LDA', sep = " ")
+ 
+pd.DataFrame(data = LR_mat/iter,index=[0,1]).to_csv('./data_mat_LR', sep = " ")
+pd.DataFrame(data = knn_mat/iter,index=[0,1]).to_csv('./data_mat_knn', sep = " ")
+pd.DataFrame(data = XGB_mat/iter,index=[0,1]).to_csv('./data_mat_XGB', sep = " ")
+pd.DataFrame(data = svc_mat/iter,index=[0,1]).to_csv('./data_mat_svc', sep = " ")
+pd.DataFrame(data = LDA_mat/iter,index=[0,1]).to_csv('./data_mat_LDA', sep = " ")
+
+
+
+
+
+
+'''
 for i in range(10):
     x_train, x_test, y_train, y_test = pre_process(df, labels_df, 0.7)
-    '''
+
     import torch
     import torch.nn as nn
     import torch.optim as optim
@@ -110,51 +164,3 @@ for i in range(10):
     accuracy = sum(torch.tensor(y) == y_test_nn)/len(y_test)
     print(f"Accuracy {accuracy}")
 '''
-
-
-iter = 100
-for j in tqdm(range(iter)):
-    x_train, x_test, y_train, y_test = pre_process(df, labels_df, 0.7)
-    ## LDA
-    LDA = LinearDiscriminantAnalysis()
-    classifier(LDA, LR_mat, LDA_failures)
-
-    ## SVC
-    svc = SVC()
-    classifier(svc, svc_mat, svc_failures)
-
-    ## XGBoost
-    XGB = XGBClassifier(n_estimators = 100, learning_rate = 0.3)
-    classifier(XGB, XGB_mat, XGB_failures)
-
-
-    ## Logistic regression
-    LR = LogisticRegression(penalty='l1', solver='liblinear', max_iter=300)
-    classifier(LR, LR_mat, LR_failures)
-
-    ## KNN
-    knn = KNeighborsClassifier(n_neighbors=5)
-    classifier(knn, knn_mat, knn_failures)
-
-
-knn_failures = reverse_sort(knn_failures)
-LR_failures = reverse_sort(LR_failures)
-XGB_failures = reverse_sort(XGB_failures)
-svc_failures = reverse_sort(svc_failures)
-LDA_failures = reverse_sort(LDA_failures)
-
-pd.DataFrame(data = knn_failures, index=[0]).to_csv('./data_knn', sep = " ")
-pd.DataFrame(data = LR_failures, index=[0]).to_csv('./data_LR', sep = " ")
-pd.DataFrame(data = XGB_failures, index=[0]).to_csv('./data_XGB', sep = " ")
-pd.DataFrame(data = svc_failures, index=[0]).to_csv('./data_svc', sep = " " )
-pd.DataFrame(data = LDA_failures, index=[0]).to_csv('./data_LDA', sep = " ")
- 
-pd.DataFrame(data = LR_mat/iter,index=[0,1]).to_csv('./data_mat_LR', sep = " ")
-pd.DataFrame(data = knn_mat/iter,index=[0,1]).to_csv('./data_mat_knn', sep = " ")
-pd.DataFrame(data = XGB_mat/iter,index=[0,1]).to_csv('./data_mat_XGB', sep = " ")
-pd.DataFrame(data = svc_mat/iter,index=[0,1]).to_csv('./data_mat_svc', sep = " ")
-pd.DataFrame(data = LDA_mat/iter,index=[0,1]).to_csv('./data_mat_LDA', sep = " ")
-
-
-
-
