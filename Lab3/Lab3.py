@@ -6,33 +6,19 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import confusion_matrix
 from sklearn.svm import SVC
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 import matplotlib.pyplot as plt
 from matplotlib import colormaps
 from sklearn.model_selection import train_test_split
 from xgboost import XGBClassifier
-import torch
-import torch.nn as nn
-import torch.optim as optim
+
+
 
 
 df = pd.read_csv('./Data/CATSnDOGS.csv', sep="," ,header = 0)
 labels_df = pd.read_csv('./Data/Labels.csv', header = 0)
 
-'''
-import torchvision
-import torchvision.transforms as transforms
-transform = transforms.Compose(
-    [transforms.ToTensor(),
-     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
-batch_size = 4
-
-trainset = torchvision.datasets.CIFAR10(root='./data', train=True,
-                                        download=True, transform=transform)
-
-
-print(trainset)
-'''
 #plt.imshow(df.iloc[77].to_numpy().reshape(64,64).transpose(), cmap=colormaps['cool'])
 #plt.show()
 
@@ -62,16 +48,20 @@ LR_failures = dict()
 knn_failures = dict()
 XGB_failures = dict()
 svc_failures = dict()
-nn_failures = dict()
+LDA_failures = dict()
 
 LR_mat = np.zeros((2,2))
 knn_mat = np.zeros((2,2))
 XGB_mat = np.zeros((2,2))
 svc_mat = np.zeros((2,2))
-nn_mat = np.zeros((2,2))
+LDA_mat = np.zeros((2,2))
 
 for i in range(10):
     x_train, x_test, y_train, y_test = pre_process(df, labels_df, 0.7)
+    '''
+    import torch
+    import torch.nn as nn
+    import torch.optim as optim
     ##Neural network
 
     model = nn.Sequential(
@@ -119,12 +109,15 @@ for i in range(10):
         y.append(sub_list.argmax(dim=0).item())
     accuracy = sum(torch.tensor(y) == y_test_nn)/len(y_test)
     print(f"Accuracy {accuracy}")
-
+'''
 
 
 iter = 10
 for j in tqdm(range(iter)):
     x_train, x_test, y_train, y_test = pre_process(df, labels_df, 0.7)
+    ## LDA
+    LDA = LinearDiscriminantAnalysis()
+    classifier(LDA, LR_mat, LDA_failures)
 
     ## SVC
     svc = SVC()
@@ -148,22 +141,20 @@ knn_failures = reverse_sort(knn_failures)
 LR_failures = reverse_sort(LR_failures)
 XGB_failures = reverse_sort(XGB_failures)
 svc_failures = reverse_sort(svc_failures)
+LDA_failures = reverse_sort(LDA_failures)
 
-knn_fails = pd.DataFrame(data = knn_failures, index=[0])
-LR_fails = pd.DataFrame(data = LR_failures, index=[0])
-XGB_fails = pd.DataFrame(data = XGB_failures, index=[0])
-svc_fails = pd.DataFrame(data = svc_failures, index=[0])
+pd.DataFrame(data = knn_failures, index=[0]).to_csv('./data_knn', sep = " ")
+pd.DataFrame(data = LR_failures, index=[0]).to_csv('./data_LR', sep = " ")
+pd.DataFrame(data = XGB_failures, index=[0]).to_csv('./data_XGB', sep = " ")
+pd.DataFrame(data = svc_failures, index=[0]).to_csv('./data_svc', sep = " " )
+pd.DataFrame(data = LDA_failures, index=[0]).to_csv('./data_LDA', sep = " ")
  
-knn_fails.to_csv('./data_knn', sep = " ")
-LR_fails.to_csv('./data_LR', sep = " ")
-XGB_fails.to_csv('./data_XGB', sep = " ")
-svc_fails.to_csv('./data_svc', sep = " " )
+pd.DataFrame(data = LR_mat/iter,index=[0,1]).to_csv('./data_mat_LR', sep = " ")
+pd.DataFrame(data = knn_mat/iter,index=[0,1]).to_csv('./data_mat_knn', sep = " ")
+pd.DataFrame(data = XGB_mat/iter,index=[0,1]).to_csv('./data_mat_XGB', sep = " ")
+pd.DataFrame(data = svc_mat/iter,index=[0,1]).to_csv('./data_mat_svc', sep = " ")
+pd.DataFrame(data = LDA_mat/iter,index=[0,1]).to_csv('./data_mat_LDA', sep = " ")
 
-pd.DataFrame(data = LR_mat/iter,index=[0,1]).to_csv('./data_mat_knn', sep = " ")
 
-print(LR_mat/iter)
-print(knn_mat/iter)
-print(XGB_mat/iter)
-print(svc_mat/iter)
 
 
