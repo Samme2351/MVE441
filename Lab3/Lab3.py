@@ -2,9 +2,9 @@ import pandas as pd
 import numpy as np
 from tqdm import tqdm
 from sklearn.neighbors import KNeighborsClassifier, NearestCentroid
-from sklearn.linear_model import LogisticRegression
-from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import confusion_matrix
+from sklearn.linear_model import LogisticRegression, Lasso, RidgeClassifier
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.metrics import confusion_matrix, f1_score
 from sklearn.svm import SVC
 import matplotlib.pyplot as plt
 from matplotlib import colormaps
@@ -141,6 +141,7 @@ print(XGB_mat/iter)
 print(svc_mat/iter)
 '''
 
+
 ## 1 b
 x_train, x_test, y_train, y_test = pre_process(df, labels_df, 0.7)
 
@@ -167,3 +168,64 @@ NC_overall_centroid = (NC.centroids_[0,:] + NC.centroids_[1,:])/2
 #print(abs(NC.centroids_[0]-NC_overall_centroid).max())
 NC_centroids = pd.DataFrame(NC.centroids_)
 NC_centroids.to_csv('./data_1b_nc', sep = " ")
+
+
+## 2
+tcga_df = pd.read_csv('../Data/TCGAdata.txt', sep=" " ,header = 0)
+tcga_labels = pd.read_csv('../Data/TCGAlabels', sep = " ", header = 0)
+splits = [0.2, 0.5, 0.8]
+
+for split in tqdm(splits):
+    x_train, x_test, y_train, y_test = pre_process(tcga_df, tcga_labels, split)
+
+    ## KNN
+    knn = KNeighborsClassifier(n_neighbors=5)
+    knn.fit(x_train, y_train)
+    y_pred = knn.predict(x_test)
+    knn_score = f1_score(y_test, y_pred, average=None)
+
+    ## LDA
+    lda = LinearDiscriminantAnalysis(n_components=5)
+    lda.fit(x_train, y_train)
+    y_pred = lda.predict(x_test)
+    lda_score = f1_score(y_test, y_pred, average=None)
+
+    ## LR
+    lr = LogisticRegression(solver='liblinear', max_iter=300)
+    lr.fit(x_train, y_train)
+    y_pred = lr.predict(x_test)
+    lr_score = f1_score(y_test, y_pred, average=None)
+
+    ## Lasso
+    lasso = LogisticRegression(penalty='l1', solver='liblinear', max_iter=300)
+    lasso.fit(x_train, y_train)
+    y_pred = lasso.predict(x_test)
+    lasso_score = f1_score(y_test, y_pred, average=None)
+
+    ## KRR
+
+    ## SVC
+    svc = SVC()
+    svc.fit(x_train, y_train)
+    y_pred = svc.predict(x_test)
+    svc_score = f1_score(y_test, y_pred, average=None)
+
+    ## RF
+    rf = RandomForestClassifier()
+    rf.fit(x_train, y_train)
+    y_pred = rf.predict(x_test)
+    rf_score = f1_score(y_test, y_pred, average=None)
+
+    ## XGB
+    le = LabelEncoder()
+    le.fit(y_train)
+    y_train = le.transform(y_train)
+    y_test = le.transform(y_test)
+    xgb = XGBClassifier()
+    xgb.fit(x_train, y_train)
+    y_pred = xgb.predict(x_test)
+    xgb_score = f1_score(y_test, y_pred, average=None)
+
+    scores = pd.DataFrame(data = [knn_score, lda_score, lr_score, lasso_score, svc_score, rf_score, xgb_score], index = ['knn', 'lda', 'lr', 'lasso', 'svc', 'rf', 'xgb'])
+    file_name = './data_2_' + str(split)
+    scores.to_csv(file_name, sep = ' ')
