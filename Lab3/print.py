@@ -31,13 +31,16 @@ def plot_ind(daf):
         plt.title(f"This is {animal[labels_df.at[int(i),'x']]} but we believe it to be the other {daf.at[0,i]} times")
         plt.show()
 
-pictures = 0
+pictures = 1
 com_errs = 0
 accuracy = 1
-print = 0
 
 #class errors
 print(data_mat_knn)
+print(data_mat_LR)
+print(data_mat_svc)
+print(data_mat_XGB)
+print(data_mat_LDA)
 
 
 #Print
