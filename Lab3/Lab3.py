@@ -67,7 +67,7 @@ LDA_acc = 0
 
 
 
-iter = 1
+iter = 100
 for j in tqdm(range(iter)):
     x_train, x_test, y_train, y_test = pre_process(df, labels_df, 0.7)
     ## LDA
@@ -91,6 +91,7 @@ for j in tqdm(range(iter)):
     knn = KNeighborsClassifier(n_neighbors=5)
     classifier(knn, knn_mat, knn_failures, acc, "knn")
 
+pd.DataFrame(data =acc, index=[0]).to_csv('./data_acc', sep= " ")
 
 pd.DataFrame(data = reverse_sort(knn_failures), index=[0]).to_csv('./data_knn', sep = " ")
 pd.DataFrame(data = reverse_sort(LR_failures), index=[0]).to_csv('./data_LR', sep = " ")
