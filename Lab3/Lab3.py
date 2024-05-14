@@ -3,7 +3,6 @@ import numpy as np
 from tqdm import tqdm
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import confusion_matrix
 from sklearn.svm import SVC
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
@@ -32,6 +31,7 @@ def classifier(model, mat, failures):
     model.fit(x_train, y_train)
     y_pred = model.predict(x_test)
 
+    acc = accuracy(y_pred, y_test)
     mat += confusion_matrix(y_true=y_test, y_pred=y_pred)
 
     fails = y_pred!=y_test
@@ -112,7 +112,7 @@ for i in range(10):
 '''
 
 
-iter = 10
+iter = 100
 for j in tqdm(range(iter)):
     x_train, x_test, y_train, y_test = pre_process(df, labels_df, 0.7)
     ## LDA
