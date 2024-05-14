@@ -31,8 +31,8 @@ def classifier(model, mat, failures, acc, name):
     model.fit(x_train, y_train)
     y_pred = model.predict(x_test)
 
-    acc[name] += accuracy_score(y_true=y_test, y_pred=y_pred)
-    mat += confusion_matrix(y_true=y_test, y_pred=y_pred)
+    acc[name] += accuracy_score(y_true=y_test, y_pred=y_pred)/iter
+    mat += confusion_matrix(y_true=y_test, y_pred=y_pred)/iter
 
     fails = y_pred!=y_test
     for i in fails*x_test.index:

@@ -23,7 +23,7 @@ data_mat_svc = pd.read_csv('./data_mat_svc', sep =" ", header= 0, index_col=0)
 data_XGB = pd.read_csv('./data_XGB', sep =" ", header= 0, index_col=0)
 data_mat_XGB = pd.read_csv('./data_mat_XGB', sep =" ", header= 0, index_col=0)
 data_LDA = pd.read_csv('./data_LDA', sep =" ", header= 0, index_col=0)
-data_mat_LDA = pd.read_csv('./data_mat_LDa', sep =" ", header= 0, index_col=0)
+data_mat_LDA = pd.read_csv('./data_mat_LDA', sep =" ", header= 0, index_col=0)
 
 def plot_ind(daf):
     for i in daf.columns:
@@ -34,6 +34,19 @@ def plot_ind(daf):
 pictures = 0
 com_errs = 0
 accuracy = 1
+print = 0
+
+#class errors
+print(data_mat_knn)
+
+
+#Print
+if print == 1:
+    print(data_knn)
+    print(data_LDA)
+    print(data_LR)
+    print(data_XGB)
+    print(data_svc)
 
 #calulate accuracy
 if accuracy == 1:
