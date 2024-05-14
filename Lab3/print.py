@@ -13,8 +13,10 @@ df = pd.read_csv('./Data/CATSnDOGS.csv', sep="," ,header = 0)
 labels_df = pd.read_csv('./Data/Labels.csv', header = 0)
 
 data_knn = pd.read_csv('./data_LR', sep =" ", header= 0, index_col=0)
+data_mat_knn = pd.read_csv('./data_mat_knn', sep =" ", header= 0, index_col=0)
 data_LR = pd.read_csv('./data_knn', sep =" ", header= 0, index_col=0)
-
+data_svc= pd.read_csv('./data_svc', sep =" ", header= 0, index_col=0)
+data_XGB = pd.read_csv('./data_XGB', sep =" ", header= 0, index_col=0)
 
 def plot_ind(daf):
     for i in daf.columns:
