@@ -4,7 +4,7 @@ from tqdm import tqdm
 from sklearn.neighbors import KNeighborsClassifier, NearestCentroid
 from sklearn.linear_model import LogisticRegression, Lasso, RidgeClassifier
 from sklearn.preprocessing import StandardScaler, LabelEncoder
-from sklearn.metrics import confusion_matrix, f1_score
+from sklearn.metrics import confusion_matrix, f1_score, accuracy_score
 from sklearn.svm import SVC
 import matplotlib.pyplot as plt
 from matplotlib import colormaps
@@ -16,7 +16,8 @@ import torch.optim as optim
 from sklearn.decomposition import PCA
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_selection import SequentialFeatureSelector, SelectKBest, f_classif
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis, QuadraticDiscriminantAnalysis
+from sklearn.datasets import load_digits
 
 df = pd.read_csv('../Data/CATSnDOGS.csv', sep="," ,header = 0)
 labels_df = pd.read_csv('../Data/Labels.csv', header = 0)
@@ -143,89 +144,108 @@ print(svc_mat/iter)
 
 
 ## 1 b
-x_train, x_test, y_train, y_test = pre_process(df, labels_df, 0.7)
+for n in tqdm(range(10)):
+    x_train, x_test, y_train, y_test = pre_process(df, labels_df, 0.7)
 
-LR = LogisticRegression(penalty='l1', solver='liblinear', max_iter=300)
-LR.fit(x_train, y_train)
-LR_coef = pd.DataFrame(data = LR.coef_[0,:])
-LR_coef.to_csv('./data_1b_lr', sep = " ")
-#abs_coef = abs(LR_coef)
-#Z = zip(abs_coef, [x for x in range(4096)])
-#LR_imp_features = [x for _, x in sorted(zip(abs_coef, [x for x in range(4096)]), key=lambda pair: pair[0], reverse=True)][:100]
-#print(LR_imp_features)
-#print(abs_coef[LR_imp_features])
+    LR = LogisticRegression(penalty='l1', solver='liblinear', max_iter=300)
+    LR.fit(x_train, y_train)
+    LR_coef = pd.DataFrame(data = LR.coef_[0,:])
+    LR_coef.to_csv('./data_1b_lr_' + str(n), sep = " ")
+    #abs_coef = abs(LR_coef)
+    #Z = zip(abs_coef, [x for x in range(4096)])
+    #LR_imp_features = [x for _, x in sorted(zip(abs_coef, [x for x in range(4096)]), key=lambda pair: pair[0], reverse=True)][:100]
+    #print(LR_imp_features)
+    #print(abs_coef[LR_imp_features])
 
-feature_selector = SelectKBest(f_classif, k=100)
-x_train_selected = feature_selector.fit_transform(x_train, y_train)
-#print(x_train_selected.shape)
-#print(df.columns[feature_selector.get_support()])
-KB_features = pd.DataFrame(df.columns[feature_selector.get_support()])
-KB_features.to_csv('./data_1b_kb', sep = " ")
+    feature_selector = SelectKBest(f_classif, k=100)
+    x_train_selected = feature_selector.fit_transform(x_train, y_train)
+    #print(x_train_selected.shape)
+    #print(df.columns[feature_selector.get_support()])
+    #KB_features = df.columns
+    KB_scores = pd.DataFrame(feature_selector.scores_)
+    #KB_results = pd.DataFrame([KB_features, KB_scores])
+    #KB_results.to_csv('./data_1b_kb_' + str(n), sep = " ")
+    KB_scores.to_csv('./data_1b_kb_' + str(n), sep = " ")
 
-NC = NearestCentroid(shrink_threshold=0.5)
-NC.fit(x_train, y_train)
-NC_overall_centroid = (NC.centroids_[0,:] + NC.centroids_[1,:])/2
-#print(abs(NC.centroids_[0]-NC_overall_centroid).max())
-NC_centroids = pd.DataFrame(NC.centroids_)
-NC_centroids.to_csv('./data_1b_nc', sep = " ")
+    NC = NearestCentroid(shrink_threshold=0.5)
+    NC.fit(x_train, y_train)
+    NC_overall_centroid = (NC.centroids_[0,:] + NC.centroids_[1,:])/2
+    #print(abs(NC.centroids_[0]-NC_overall_centroid).max())
+    NC_centroids = pd.DataFrame(NC.centroids_)
+    NC_centroids.to_csv('./data_1b_nc_' + str(n), sep = " ")
 
 
 ## 2
 tcga_df = pd.read_csv('../Data/TCGAdata.txt', sep=" " ,header = 0)
 tcga_labels = pd.read_csv('../Data/TCGAlabels', sep = " ", header = 0)
-splits = [0.2, 0.5, 0.8]
 
-for split in tqdm(splits):
-    x_train, x_test, y_train, y_test = pre_process(tcga_df, tcga_labels, split)
+digits_df, digits_labels = load_digits(return_X_y=True, as_frame=True)
+splits = [0.1, 0.4, 0.7]
 
-    ## KNN
-    knn = KNeighborsClassifier(n_neighbors=5)
-    knn.fit(x_train, y_train)
-    y_pred = knn.predict(x_test)
-    knn_score = f1_score(y_test, y_pred, average=None)
+for n in tqdm(range(10)):
+    for split in splits:
+        x_train, x_test, y_train, y_test = pre_process(df, labels_df, split)
 
-    ## LDA
-    lda = LinearDiscriminantAnalysis(n_components=5)
-    lda.fit(x_train, y_train)
-    y_pred = lda.predict(x_test)
-    lda_score = f1_score(y_test, y_pred, average=None)
+        ## KNN
+        knn = KNeighborsClassifier(n_neighbors=10)
+        knn.fit(x_train, y_train)
+        y_pred = knn.predict(x_test)
+        knn_score = f1_score(y_test, y_pred, average=None)
+        knn_score = np.append(knn_score, accuracy_score(y_test, y_pred))
 
-    ## LR
-    lr = LogisticRegression(solver='liblinear', max_iter=300)
-    lr.fit(x_train, y_train)
-    y_pred = lr.predict(x_test)
-    lr_score = f1_score(y_test, y_pred, average=None)
+        ## LDA
+        lda = LinearDiscriminantAnalysis()
+        lda.fit(x_train, y_train)
+        y_pred = lda.predict(x_test)
+        lda_score = f1_score(y_test, y_pred, average=None)
+        lda_score = np.append(lda_score, accuracy_score(y_test, y_pred))
 
-    ## Lasso
-    lasso = LogisticRegression(penalty='l1', solver='liblinear', max_iter=300)
-    lasso.fit(x_train, y_train)
-    y_pred = lasso.predict(x_test)
-    lasso_score = f1_score(y_test, y_pred, average=None)
+        ## QDA
+        qda = QuadraticDiscriminantAnalysis()
+        lda.fit(x_train, y_train)
+        y_pred = lda.predict(x_test)
+        qda_score = f1_score(y_test, y_pred, average=None)
+        qda_score = np.append(qda_score, accuracy_score(y_test, y_pred))
 
-    ## KRR
+        ## LR
+        lr = LogisticRegression(solver='liblinear', max_iter=300)
+        lr.fit(x_train, y_train)
+        y_pred = lr.predict(x_test)
+        lr_score = f1_score(y_test, y_pred, average=None)
+        lr_score = np.append(lr_score, accuracy_score(y_test, y_pred))
 
-    ## SVC
-    svc = SVC()
-    svc.fit(x_train, y_train)
-    y_pred = svc.predict(x_test)
-    svc_score = f1_score(y_test, y_pred, average=None)
+        ## Lasso
+        lasso = LogisticRegression(penalty='l1', solver='liblinear', max_iter=300)
+        lasso.fit(x_train, y_train)
+        y_pred = lasso.predict(x_test)
+        lasso_score = f1_score(y_test, y_pred, average=None)
+        lasso_score = np.append(lasso_score, accuracy_score(y_test, y_pred))
 
-    ## RF
-    rf = RandomForestClassifier()
-    rf.fit(x_train, y_train)
-    y_pred = rf.predict(x_test)
-    rf_score = f1_score(y_test, y_pred, average=None)
+        ## SVC
+        svc = SVC()
+        svc.fit(x_train, y_train)
+        y_pred = svc.predict(x_test)
+        svc_score = f1_score(y_test, y_pred, average=None)
+        svc_score = np.append(svc_score, accuracy_score(y_test, y_pred))
 
-    ## XGB
-    le = LabelEncoder()
-    le.fit(y_train)
-    y_train = le.transform(y_train)
-    y_test = le.transform(y_test)
-    xgb = XGBClassifier()
-    xgb.fit(x_train, y_train)
-    y_pred = xgb.predict(x_test)
-    xgb_score = f1_score(y_test, y_pred, average=None)
+        ## RF
+        rf = RandomForestClassifier()
+        rf.fit(x_train, y_train)
+        y_pred = rf.predict(x_test)
+        rf_score = f1_score(y_test, y_pred, average=None)
+        rf_score = np.append(rf_score, accuracy_score(y_test, y_pred))
 
-    scores = pd.DataFrame(data = [knn_score, lda_score, lr_score, lasso_score, svc_score, rf_score, xgb_score], index = ['knn', 'lda', 'lr', 'lasso', 'svc', 'rf', 'xgb'])
-    file_name = './data_2_' + str(split)
-    scores.to_csv(file_name, sep = ' ')
+        ## XGB
+        le = LabelEncoder()
+        le.fit(y_train)
+        y_train = le.transform(y_train)
+        y_test = le.transform(y_test)
+        xgb = XGBClassifier()
+        xgb.fit(x_train, y_train)
+        y_pred = xgb.predict(x_test)
+        xgb_score = f1_score(y_test, y_pred, average=None)
+        xgb_score = np.append(xgb_score, accuracy_score(y_test, y_pred))
+
+        scores = pd.DataFrame(data = [knn_score, lda_score, lr_score, lasso_score, svc_score, rf_score, xgb_score], index = ['knn', 'lda', 'lr', 'lasso', 'svc', 'rf', 'xgb'], columns = ['cat', 'dog', 'overall'])
+        file_name = './data_2_' + str(split) + '_' + str(n)
+        scores.to_csv(file_name, sep = ' ')
