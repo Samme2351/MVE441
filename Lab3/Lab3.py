@@ -46,9 +46,9 @@ def classifier(model, mat, failures, acc, name):
 def reverse_sort(dictionary):
     return dict(sorted(dictionary.items(), key=lambda item: item[1], reverse=True))
 
-class BinaryClassifier(nn.Module):
+class Classifier(nn.Module):
     def __init__(self):
-        super(BinaryClassifier, self).__init__()
+        super(Classifier, self).__init__()
         self.fc1 = nn.Linear(4096, 200)  
         self.relu = nn.ReLU()
         self.fc2 = nn.Linear(200, 1) 
@@ -89,7 +89,7 @@ for j in tqdm(range(iter)):
     x_test_tensor = torch.tensor(x_test.to_numpy(), dtype=torch.float32)
     y_test_tensor = torch.tensor(y_test, dtype=torch.float32).view(-1, 1)  
 
-    model = BinaryClassifier()
+    model = Classifier()
 
     criterion = nn.BCELoss()
     optimizer = optim.SGD(model.parameters(), lr=0.00002)
