@@ -79,7 +79,7 @@ nn_mat = np.zeros((2,2))
 acc = {"LR": 0, "knn": 0, "XGB": 0, "svc": 0, "LDA": 0, "nn": 0}
 
 
-iter = 10
+iter = 1000
 for j in tqdm(range(iter)):
     x_train, x_test, y_train, y_test = pre_process(df, labels_df, 0.7)
 
@@ -146,12 +146,12 @@ pd.DataFrame(data = reverse_sort(svc_failures), index=[0]).to_csv('./data_svc', 
 pd.DataFrame(data = reverse_sort(LDA_failures), index=[0]).to_csv('./data_LDA', sep = " ")
 pd.DataFrame(data = reverse_sort(nn_failures), index=[0]).to_csv('./data_nn', sep = " ")
  
-pd.DataFrame(data = LR_mat/iter,index=[0,1]).to_csv('./data_mat_LR', sep = " ")
-pd.DataFrame(data = knn_mat/iter,index=[0,1]).to_csv('./data_mat_knn', sep = " ")
-pd.DataFrame(data = XGB_mat/iter,index=[0,1]).to_csv('./data_mat_XGB', sep = " ")
-pd.DataFrame(data = svc_mat/iter,index=[0,1]).to_csv('./data_mat_svc', sep = " ")
-pd.DataFrame(data = LDA_mat/iter,index=[0,1]).to_csv('./data_mat_LDA', sep = " ")
-pd.DataFrame(data = nn_mat/iter,index=[0,1]).to_csv('./data_mat_nn', sep = " ")
+pd.DataFrame(data = LR_mat,index=[0,1]).to_csv('./data_mat_LR', sep = " ")
+pd.DataFrame(data = knn_mat,index=[0,1]).to_csv('./data_mat_knn', sep = " ")
+pd.DataFrame(data = XGB_mat,index=[0,1]).to_csv('./data_mat_XGB', sep = " ")
+pd.DataFrame(data = svc_mat,index=[0,1]).to_csv('./data_mat_svc', sep = " ")
+pd.DataFrame(data = LDA_mat,index=[0,1]).to_csv('./data_mat_LDA', sep = " ")
+pd.DataFrame(data = nn_mat,index=[0,1]).to_csv('./data_mat_nn', sep = " ")
 
 
 

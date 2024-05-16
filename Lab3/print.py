@@ -24,6 +24,8 @@ data_XGB = pd.read_csv('./data_XGB', sep =" ", header= 0, index_col=0)
 data_mat_XGB = pd.read_csv('./data_mat_XGB', sep =" ", header= 0, index_col=0)
 data_LDA = pd.read_csv('./data_LDA', sep =" ", header= 0, index_col=0)
 data_mat_LDA = pd.read_csv('./data_mat_LDA', sep =" ", header= 0, index_col=0)
+data_nn = pd.read_csv('./data_nn', sep =" ", header= 0, index_col=0)
+data_mat_nn = pd.read_csv('./data_mat_nn', sep =" ", header= 0, index_col=0)
 
 def plot_ind(daf):
     for i in daf.columns:
@@ -31,16 +33,59 @@ def plot_ind(daf):
         plt.title(f"This is {animal[labels_df.at[int(i),'x']]} but we believe it to be the other {daf.at[0,i]} times")
         plt.show()
 
-pictures = 1
+def reverse_sort(dictionary):
+    return dict(sorted(dictionary.items(), key=lambda item: item[1], reverse=True))
+
+
+pictures = 0
 com_errs = 0
 accuracy = 1
+class_err = 0
+err20 = 1
+
+iter = 10
+
+if err20 == 1:
+    data_knn = data_knn[data_knn>=0.2*iter]
+    data_knn.dropna(axis=1, inplace=True)
+    data_LR = data_LR[data_knn>=0.2*iter]
+    data_LR.dropna(axis=1, inplace=True)
+    data_svc = data_svc[data_knn>=0.2*iter]
+    data_svc.dropna(axis=1, inplace=True)
+    data_XGB = data_XGB[data_knn>=0.2*iter]
+    data_XGB.dropna(axis=1, inplace=True)
+    data_LDA = data_LDA[data_knn>=0.2*iter]
+    data_LDA.dropna(axis=1, inplace=True)
+    data_nn = data_nn[data_knn>=0.2*iter]
+    data_nn.dropna(axis=1, inplace=True)
+
+    print(df)
+    occurences = {str(ind):0 for ind in df.index}
+    for ind in df.index:
+        ind = str(ind)
+        if ind in data_knn:
+            occurences[ind] += 1
+        if ind in data_LR:
+            occurences[ind] += 1
+        if ind in data_svc:
+            occurences[ind] += 1
+        if ind in data_XGB:
+            occurences[ind] += 1
+        if ind in data_LDA:
+            occurences[ind] += 1
+        if ind in data_nn:
+            occurences[ind] += 1
+
+    print(reverse_sort(occurences))
 
 #class errors
-print(data_mat_knn)
-print(data_mat_LR)
-print(data_mat_svc)
-print(data_mat_XGB)
-print(data_mat_LDA)
+if class_err == 1:
+    print(data_mat_knn)
+    print(data_mat_LR)
+    print(data_mat_svc)
+    print(data_mat_XGB)
+    print(data_mat_LDA)
+    print(data_mat_nn)
 
 
 #Print
@@ -50,6 +95,7 @@ if print == 1:
     print(data_LR)
     print(data_XGB)
     print(data_svc)
+    print(data_nn)
 
 #calulate accuracy
 if accuracy == 1:
@@ -62,6 +108,7 @@ if pictures == 1:
     plot_ind(data_svc)
     plot_ind(data_XGB)
     plot_ind(data_LDA)
+    plot_ind(data_nn)
     
 
 #Common errors
