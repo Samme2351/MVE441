@@ -1,12 +1,8 @@
 import pandas as pd
 import numpy as np
-from tqdm import tqdm
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
 from matplotlib import colormaps
-from sklearn.model_selection import train_test_split,cross_val_predict
+
 
 animal = ["cat", "dog"]
 df = pd.read_csv('./Data/CATSnDOGS.csv', sep="," ,header = 0)
@@ -38,27 +34,34 @@ def reverse_sort(dictionary):
 
 
 pictures = 0
-com_errs = 0
 accuracy = 1
 class_err = 1
-err_cut_off = 0
+err_cut_off = 1
 
 iter = 1000
 
 if err_cut_off == 1:
-    cut_off = 0.1
+    cut_off = 0.05
+    print("During {iter} rounds with {cut_off*100:.0f}% cutoff")
+
     data_knn = data_knn[data_knn>=cut_off*iter]
     data_knn.dropna(axis=1, inplace=True)
+    print(f"knn fails at {data_knn.shape[1]} of 198 pictures")
     data_LR = data_LR[data_knn>=cut_off*iter]
     data_LR.dropna(axis=1, inplace=True)
+    print(f"LR fails at {data_LR.shape[1]} of 198 pictures")
     data_svc = data_svc[data_knn>=cut_off*iter]
     data_svc.dropna(axis=1, inplace=True)
+    print(f"svc fails at {data_svc.shape[1]} of 198 pictures ")
     data_XGB = data_XGB[data_knn>=cut_off*iter]
     data_XGB.dropna(axis=1, inplace=True)
+    print(f"XGB fails at {data_XGB.shape[1]} of 198 pictures ")
     data_LDA = data_LDA[data_knn>=cut_off*iter]
     data_LDA.dropna(axis=1, inplace=True)
+    print(f"LDA fails at {data_LDA.shape[1]} of 198 pictures ")
     data_nn = data_nn[data_knn>=cut_off*iter]
     data_nn.dropna(axis=1, inplace=True)
+    print(f"nn fails at {data_nn.shape[1]} of 198 pictures ")
 
     occurences = dict()
     for ind in df.index:
@@ -94,30 +97,32 @@ if err_cut_off == 1:
             else:
                 occurences[ind] = 1
 
+    print(f"Together all methods fail att {len(occurences)} out of the 198 pictures")
     print(reverse_sort(occurences))
-    plot_ind(pd.DataFrame(data=reverse_sort(occurences), index=[0]))
+    occur_6 = {i:occurences[i] for i in occurences if occurences[i]==6}
+    print(reverse_sort(occur_6))
+    print(f"All 6 methods fail att {len(occur_6)} out of 198 pictures")
+    #plot_ind(pd.DataFrame(data=reverse_sort(occurences), index=[0]))
 
 #class errors
 if class_err == 1:
+    print("KNN:")
     print(data_mat_knn)
+    print("LR:")
     print(data_mat_LR)
+    print("svc:")
     print(data_mat_svc)
+    print("XGB:")
     print(data_mat_XGB)
+    print("LDA:")
     print(data_mat_LDA)
+    print("NN:")
     print(data_mat_nn)
 
 
-#Print
-if print == 1:
-    print(data_knn)
-    print(data_LDA)
-    print(data_LR)
-    print(data_XGB)
-    print(data_svc)
-    print(data_nn)
-
 #calulate accuracy
 if accuracy == 1:
+    print("Accuracy: ")
     print(acc)
 
 #Show pictures
@@ -130,25 +135,7 @@ if pictures == 1:
     plot_ind(data_nn)
     
 
-#Common errors
-if com_errs == 1 :
-    com_errors=dict()
-    LR_errors = []
-    knn_errors = []
 
-    for index in data_knn:
-        if index in data_LR:
-            com_errors[index] = (data_knn[index].iloc[0], data_LR[index].iloc[0])
-        else:
-            knn_errors.append(index)
-
-    for index in data_LR:
-        if index not in data_knn:
-            LR_errors.append(index)
-
-    print(com_errors)
-    print(LR_errors)
-    print(knn_errors)
 
 
 
