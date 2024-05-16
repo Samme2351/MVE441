@@ -151,26 +151,15 @@ for n in tqdm(range(10)):
     LR.fit(x_train, y_train)
     LR_coef = pd.DataFrame(data = LR.coef_[0,:])
     LR_coef.to_csv('./data_1b_lr_' + str(n), sep = " ")
-    #abs_coef = abs(LR_coef)
-    #Z = zip(abs_coef, [x for x in range(4096)])
-    #LR_imp_features = [x for _, x in sorted(zip(abs_coef, [x for x in range(4096)]), key=lambda pair: pair[0], reverse=True)][:100]
-    #print(LR_imp_features)
-    #print(abs_coef[LR_imp_features])
 
     feature_selector = SelectKBest(f_classif, k=100)
     x_train_selected = feature_selector.fit_transform(x_train, y_train)
-    #print(x_train_selected.shape)
-    #print(df.columns[feature_selector.get_support()])
-    #KB_features = df.columns
     KB_scores = pd.DataFrame(feature_selector.scores_)
-    #KB_results = pd.DataFrame([KB_features, KB_scores])
-    #KB_results.to_csv('./data_1b_kb_' + str(n), sep = " ")
     KB_scores.to_csv('./data_1b_kb_' + str(n), sep = " ")
 
     NC = NearestCentroid(shrink_threshold=0.5)
     NC.fit(x_train, y_train)
     NC_overall_centroid = (NC.centroids_[0,:] + NC.centroids_[1,:])/2
-    #print(abs(NC.centroids_[0]-NC_overall_centroid).max())
     NC_centroids = pd.DataFrame(NC.centroids_)
     NC_centroids.to_csv('./data_1b_nc_' + str(n), sep = " ")
 
