@@ -40,43 +40,62 @@ def reverse_sort(dictionary):
 pictures = 0
 com_errs = 0
 accuracy = 1
-class_err = 0
-err20 = 1
+class_err = 1
+err_cut_off = 0
 
-iter = 10
+iter = 1000
 
-if err20 == 1:
-    data_knn = data_knn[data_knn>=0.2*iter]
+if err_cut_off == 1:
+    cut_off = 0.1
+    data_knn = data_knn[data_knn>=cut_off*iter]
     data_knn.dropna(axis=1, inplace=True)
-    data_LR = data_LR[data_knn>=0.2*iter]
+    data_LR = data_LR[data_knn>=cut_off*iter]
     data_LR.dropna(axis=1, inplace=True)
-    data_svc = data_svc[data_knn>=0.2*iter]
+    data_svc = data_svc[data_knn>=cut_off*iter]
     data_svc.dropna(axis=1, inplace=True)
-    data_XGB = data_XGB[data_knn>=0.2*iter]
+    data_XGB = data_XGB[data_knn>=cut_off*iter]
     data_XGB.dropna(axis=1, inplace=True)
-    data_LDA = data_LDA[data_knn>=0.2*iter]
+    data_LDA = data_LDA[data_knn>=cut_off*iter]
     data_LDA.dropna(axis=1, inplace=True)
-    data_nn = data_nn[data_knn>=0.2*iter]
+    data_nn = data_nn[data_knn>=cut_off*iter]
     data_nn.dropna(axis=1, inplace=True)
 
-    print(df)
-    occurences = {str(ind):0 for ind in df.index}
+    occurences = dict()
     for ind in df.index:
         ind = str(ind)
         if ind in data_knn:
-            occurences[ind] += 1
+            if ind in occurences:
+                occurences[ind] += 1
+            else:
+                occurences[ind] = 1
         if ind in data_LR:
-            occurences[ind] += 1
+            if ind in occurences:
+                occurences[ind] += 1
+            else:
+                occurences[ind] = 1
         if ind in data_svc:
-            occurences[ind] += 1
+            if ind in occurences:
+                occurences[ind] += 1
+            else:
+                occurences[ind] = 1
         if ind in data_XGB:
-            occurences[ind] += 1
+            if ind in occurences:
+                occurences[ind] += 1
+            else:
+                occurences[ind] = 1
         if ind in data_LDA:
-            occurences[ind] += 1
+            if ind in occurences:
+                occurences[ind] += 1
+            else:
+                occurences[ind] = 1
         if ind in data_nn:
-            occurences[ind] += 1
+            if ind in occurences:
+                occurences[ind] += 1
+            else:
+                occurences[ind] = 1
 
     print(reverse_sort(occurences))
+    plot_ind(pd.DataFrame(data=reverse_sort(occurences), index=[0]))
 
 #class errors
 if class_err == 1:
