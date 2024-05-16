@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+from os.path import exists
 
 df = pd.read_csv('../Data/CATSnDOGS.csv', sep="," ,header = 0)
 #print(list(df.columns))
@@ -9,10 +10,16 @@ df = pd.read_csv('../Data/CATSnDOGS.csv', sep="," ,header = 0)
 ## LR scores: absolute value of coefficients
 lr_scores = np.zeros([4096])
 
-for n in range(10):
-    lr_result_temp = abs(np.array(pd.read_csv('data_1b_lr_' + str(n), sep = " ")['0']))
-    lr_scores += lr_result_temp
-    #print(lr_scores)
+n = 0
+file_exists = True
+while file_exists:
+    if exists('data_1b_lr_' + str(n)):
+        lr_result_temp = abs(np.array(pd.read_csv('data_1b_lr_' + str(n), sep = " ")['0']))
+        lr_scores += lr_result_temp
+        n += 1
+        #print(lr_scores)
+    else:
+        file_exists = False
 
 # Sort LR scores
 LR_imp_features = [x for _, x in sorted(zip(lr_scores, list(df.columns)), key=lambda pair: pair[0], reverse=True)]
@@ -22,10 +29,16 @@ LR_imp_features = [x for _, x in sorted(zip(lr_scores, list(df.columns)), key=la
 ## KB scores: f_classif scores
 kb_scores = np.zeros([4096])
 
-for n in range(10):
-    kb_result_temp = np.array(pd.read_csv('data_1b_kb_' + str(n), sep = ' ')['0'])
-    kb_scores += kb_result_temp
-    #print(kb_scores)
+n = 0
+file_exists = True
+while file_exists:
+    if exists('data_1b_lr_' + str(n)):
+        kb_result_temp = np.array(pd.read_csv('data_1b_kb_' + str(n), sep = ' ')['0'])
+        kb_scores += kb_result_temp
+        n += 1
+        #print(kb_scores)
+    else:
+        file_exists = False
 
 # Sort KB scores
 KB_imp_features = [x for _, x in sorted(zip(kb_scores, list(df.columns)), key=lambda pair: pair[0], reverse=True)]
@@ -35,14 +48,20 @@ KB_imp_features = [x for _, x in sorted(zip(kb_scores, list(df.columns)), key=la
 ## NC scores: absolute distance between centroid and overall centroid
 nc_scores = np.zeros([4096])
 
-for n in range(10):
-    nc_result_temp = pd.read_csv('data_1b_nc_' + str(n), sep = " ")
-    centroid_1 = np.array(nc_result_temp.loc[0])
-    centroid_1 = np.delete(centroid_1, 0)
-    centroid_2 = np.array(nc_result_temp.loc[1])
-    centroid_2 = np.delete(centroid_2, 0)
-    nc_scores += abs(centroid_1 - (centroid_1 + centroid_2)/2)
-    #print(nc_scores.max())
+n = 0
+file_exists = True
+while file_exists:
+    if exists('data_1b_lr_' + str(n)):
+        nc_result_temp = pd.read_csv('data_1b_nc_' + str(n), sep = " ")
+        centroid_1 = np.array(nc_result_temp.loc[0])
+        centroid_1 = np.delete(centroid_1, 0)
+        centroid_2 = np.array(nc_result_temp.loc[1])
+        centroid_2 = np.delete(centroid_2, 0)
+        nc_scores += abs(centroid_1 - (centroid_1 + centroid_2)/2)
+        n += 1
+        #print(nc_scores.max())
+    else:
+        file_exists = False
 
 # Sort NC scores
 NC_imp_features = [x for _, x in sorted(zip(nc_scores, list(df.columns)), key=lambda pair: pair[0], reverse=True)]
