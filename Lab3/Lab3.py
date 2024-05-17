@@ -9,6 +9,7 @@ from sklearn.metrics import confusion_matrix, accuracy_score, f1_score
 from sklearn.feature_selection import f_classif, SelectKBest
 from sklearn.datasets import load_digits
 from sklearn.svm import SVC
+from sklearn.inspection import permutation_importance
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis, QuadraticDiscriminantAnalysis
 import matplotlib.pyplot as plt
 from matplotlib import colormaps
@@ -69,13 +70,15 @@ class Classifier(nn.Module):
 
 
 ## 1 b
-for n in tqdm(range(10)):
+for n in tqdm(range(100)):
     x_train, x_test, y_train, y_test = pre_process(df, labels_df, 0.7)
 
     LR = LogisticRegression(penalty='l1', solver='liblinear', max_iter=300)
     LR.fit(x_train, y_train)
     LR_coef = pd.DataFrame(data = LR.coef_[0,:])
     LR_coef.to_csv('./data_1b_lr_' + str(n), sep = " ")
+
+    perm = permutation_importance(LR, x_test y_test, n_repeats = 30)
 
     feature_selector = SelectKBest(f_classif, k=100)
     x_train_selected = feature_selector.fit_transform(x_train, y_train)
@@ -84,9 +87,12 @@ for n in tqdm(range(10)):
 
     NC = NearestCentroid(shrink_threshold=0.5)
     NC.fit(x_train, y_train)
+    print(NC.centroids_)
     NC_overall_centroid = (NC.centroids_[0,:] + NC.centroids_[1,:])/2
     NC_centroids = pd.DataFrame(NC.centroids_)
     NC_centroids.to_csv('./data_1b_nc_' + str(n), sep = " ")
+
+
 
 
 ## 2

@@ -33,7 +33,7 @@ def reverse_sort(dictionary):
     return dict(sorted(dictionary.items(), key=lambda item: item[1], reverse=True))
 
 
-pictures = 0
+pictures = 1
 accuracy = 1
 class_err = 1
 err_cut_off = 1
