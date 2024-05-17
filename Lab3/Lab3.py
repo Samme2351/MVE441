@@ -17,7 +17,7 @@ from sklearn.decomposition import PCA
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_selection import SequentialFeatureSelector, SelectKBest, f_classif
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis, QuadraticDiscriminantAnalysis
-from sklearn.datasets import load_digits
+from sklearn.datasets import load_digits, make_moons, make_swiss_roll, make_multilabel_classification, make_circles
 
 df = pd.read_csv('../Data/CATSnDOGS.csv', sep="," ,header = 0)
 labels_df = pd.read_csv('../Data/Labels.csv', header = 0)
@@ -55,7 +55,7 @@ def classifier(model, mat, failures):
 def reverse_sort(dictionary):
     return dict(sorted(dictionary.items(), key=lambda item: item[1], reverse=True))
 
-LR_failures = dict()
+LR_failures = dict()Calculated as the absolute difference between the overall centroid and a class-wise shrunken centroid (which is the same for both classes except sign). 
 knn_failures = dict()
 XGB_failures = dict()
 svc_failures = dict()
@@ -142,7 +142,6 @@ print(XGB_mat/iter)
 print(svc_mat/iter)
 '''
 
-
 ## 1 b
 for n in tqdm(range(10)):
     x_train, x_test, y_train, y_test = pre_process(df, labels_df, 0.7)
@@ -169,13 +168,15 @@ tcga_df = pd.read_csv('../Data/TCGAdata.txt', sep=" " ,header = 0)
 tcga_labels = pd.read_csv('../Data/TCGAlabels', sep = " ", header = 0)
 
 digits_df, digits_labels = load_digits(return_X_y=True, as_frame=True)
-splits = [0.1, 0.4, 0.7]
+splits = [0.05, 0.4, 0.7]
 
-for n in tqdm(range(10)):
+moons_data, moons_labels = make_circles(1000)
+
+for n in tqdm(range(20)):
     for split in splits:
-        x_train, x_test, y_train, y_test = pre_process(df, labels_df, split)
+        x_train, x_test, y_train, y_test = train_test_split(moons_data, moons_labels, test_size=1-split)#pre_process(pd.DataFrame(moons_data), pd.DataFrame(moons_data), split)
 
-        ## KNN
+        ## KNNsklearn data sets
         knn = KNeighborsClassifier(n_neighbors=10)
         knn.fit(x_train, y_train)
         y_pred = knn.predict(x_test)
@@ -235,6 +236,49 @@ for n in tqdm(range(10)):
         xgb_score = f1_score(y_test, y_pred, average=None)
         xgb_score = np.append(xgb_score, accuracy_score(y_test, y_pred))
 
-        scores = pd.DataFrame(data = [knn_score, lda_score, lr_score, lasso_score, svc_score, rf_score, xgb_score], index = ['knn', 'lda', 'lr', 'lasso', 'svc', 'rf', 'xgb'], columns = ['cat', 'dog', 'overall'])
+        class Classifier(nn.Module):
+            def __init__(self):
+                super(Classifier, self).__init__()
+                self.fc1 = nn.Linear(2, 200)  
+                self.relu = nn.ReLU()
+                self.fc2 = nn.Linear(200, 1) 
+                self.sigmoid = nn.Sigmoid()
+
+            def forward(self, x):
+                x = self.fc1(x)
+                x = self.relu(x)
+                x = self.fc2(x)
+                x = self.sigmoid(x)
+                return x
+
+        ## NN
+        x_train_tensor = torch.tensor(x_train, dtype=torch.float32)
+        y_train_tensor = torch.tensor(y_train, dtype=torch.float32).view(-1, 1)  
+        x_test_tensor = torch.tensor(x_test, dtype=torch.float32)
+        y_test_tensor = torch.tensor(y_test, dtype=torch.float32).view(-1, 1)  
+
+        model = Classifier()
+
+        criterion = nn.BCELoss()
+        optimizer = optim.SGD(model.parameters(), lr=0.00002)
+
+        epochs = 500
+        for epoch in range(epochs):  
+            optimizer.zero_grad()
+            
+            outputs = model(x_train_tensor)
+            loss = criterion(outputs, y_train_tensor)
+            loss.backward()
+            optimizer.step()
+            #print(f'Epoch [{epoch+1}/{epochs}], Loss: {loss.item():.4f}')
+
+        with torch.no_grad():
+            outputs = model(x_test_tensor)
+            y_pred = (outputs > 0.5).int().view(-1)  # Convert boolean tensor to integer and flatten
+            y_test_int = y_test_tensor.int().view(-1)  # Ensure y_test is also in integer format
+            nn_score = f1_score(y_test_int, y_pred, average=None)
+            nn_score = np.append(nn_score, accuracy_score(y_test_int, y_pred))
+
+        scores = pd.DataFrame(data = [knn_score, lda_score, lr_score, lasso_score, svc_score, rf_score, xgb_score, nn_score], index = ['knn', 'lda', 'lr', 'lasso', 'svc', 'rf', 'xgb', 'nn'], columns = ['1', '2', 'overall'])
         file_name = './data_2_' + str(split) + '_' + str(n)
         scores.to_csv(file_name, sep = ' ')

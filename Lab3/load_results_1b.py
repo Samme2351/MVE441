@@ -73,7 +73,7 @@ imp_feat = list(set(LR_imp_features[:200]) & set(KB_imp_features[:200]) & set(NC
 imp_feat = [int(name.replace('V', '')) for name in imp_feat]
 print(imp_feat)
 imp_plt = df.iloc[20].to_numpy()
-imp_plt[imp_feat] = 255
+imp_plt[imp_feat] = 0
 imp_plt = imp_plt.reshape((64,64)).transpose()
 #print(imp_plt[imp_feat])
 plt.imshow(imp_plt, cmap = colormaps['bone'])

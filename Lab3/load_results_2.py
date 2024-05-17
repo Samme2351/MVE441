@@ -6,7 +6,7 @@ from os.path import exists
 # Function for averaging results of runs
 def average(split_str):
     file_exists = True
-    ov = np.zeros([7])
+    ov = np.zeros([8])
     n = 0
 
     while file_exists:
@@ -22,7 +22,7 @@ def average(split_str):
 
 
 # Average results for lowest split
-low_split = str(0.1)    # Change this if split is changed
+low_split = str(0.05)    # Change this if split is changed
 ov_lo = average(low_split)
 print(ov_lo)
 
