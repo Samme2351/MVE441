@@ -70,16 +70,25 @@ class Classifier(nn.Module):
 
 
 ## 1 b
-for n in tqdm(range(100)):
+for n in tqdm(range(11,100)):
     x_train, x_test, y_train, y_test = pre_process(df, labels_df, 0.7)
 
     LR = LogisticRegression(penalty='l1', solver='liblinear', max_iter=300)
     LR.fit(x_train, y_train)
-    LR_coef = pd.DataFrame(data = LR.coef_[0,:])
-    LR_coef.to_csv('./data_1b_lr_' + str(n), sep = " ")
+    print(LR.score(x_test, y_test))
+    #LR_coef = pd.DataFrame(data = LR.coef_[0,:]) 
+    #LR_coef.to_csv('./data_1b_lr_' + str(n), sep = " ")
 
-    perm = permutation_importance(LR, x_test y_test, n_repeats = 30)
+    perm = permutation_importance(LR, x_test, y_test, n_repeats = 20)
+    print(perm)
 
+    #for i in perm.importances_mean.argsort()[::-1]:
+        #print(i)
+    print(perm.importances_mean)
+    pd.DataFrame(perm.importances_mean).to_csv("./data_1b_perm_" + str(n), sep = " ")
+        
+
+    '''
     feature_selector = SelectKBest(f_classif, k=100)
     x_train_selected = feature_selector.fit_transform(x_train, y_train)
     KB_scores = pd.DataFrame(feature_selector.scores_)
@@ -91,7 +100,7 @@ for n in tqdm(range(100)):
     NC_overall_centroid = (NC.centroids_[0,:] + NC.centroids_[1,:])/2
     NC_centroids = pd.DataFrame(NC.centroids_)
     NC_centroids.to_csv('./data_1b_nc_' + str(n), sep = " ")
-
+    '''
 
 
 
