@@ -17,13 +17,17 @@ LR_repeating = set()
 while file_exists:
     if exists('data_1b_lr_' + str(n)):
         lr_result_temp = np.abs(np.array(pd.read_csv('data_1b_lr_' + str(n), sep = " ")['0']))
-        #print(lr_result_temp)
+
         lr_scores += lr_result_temp
         n += 1
+        
+        lr_sort_list = sorted(zip(lr_result_temp, list(df.columns)), key=lambda pair: pair[0], reverse=True)
+        lr_sort_list =[elem for elem in lr_sort_list if elem[0] != 0] 
+
         if len(LR_repeating) == 0:
-            LR_repeating = set([x for _, x in sorted(zip(lr_result_temp, list(df.columns)), key=lambda pair: pair[0], reverse=True)][:400])
+            LR_repeating = set([x for _, x in lr_sort_list][:400])
         else:
-            LR_repeating = LR_repeating & set([x for _, x in sorted(zip(lr_result_temp, list(df.columns)), key=lambda pair: pair[0], reverse=True)][:400])
+            LR_repeating = LR_repeating & set([x for _, x in lr_sort_list][:400])
         #print(lr_scores)
     else:
         file_exists = False
@@ -49,11 +53,15 @@ while file_exists:
         #print(lr_result_temp)
         perm_scores += perm_result_temp
         n += 1
+
+        perm_sort_list = sorted(zip(perm_result_temp, list(df.columns)), key=lambda pair: pair[0], reverse=True)
+        perm_sort_list =[elem for elem in perm_sort_list if elem[0] != 0] 
+
         if len(perm_repeating) == 0:
-            perm_repeating = set([x for _, x in sorted(zip(perm_result_temp, list(df.columns)), key=lambda pair: pair[0], reverse=True)][:400])
+            perm_repeating = set([x for _, x in perm_sort_list][:400])
         else:
-            perm_repeating = perm_repeating & set([x for _, x in sorted(zip(lr_result_temp, list(df.columns)), key=lambda pair: pair[0], reverse=True)][:400])
-        #print(lr_scores)
+            perm_repeating = perm_repeating & set([x for _, x in perm_sort_list][:400])
+        #print(perm_scores)
     else:
         file_exists = False
 print("repeting")
@@ -70,14 +78,18 @@ n = 0
 file_exists = True
 kb_repeating = set()
 while file_exists:
-    if exists('data_1b_lr_' + str(n)):
+    if exists('data_1b_kb_' + str(n)):
         kb_result_temp = np.abs(np.array(pd.read_csv('data_1b_kb_' + str(n), sep = ' ')['0']))
         kb_scores += kb_result_temp
         n += 1
+
+        kb_sort_list = sorted(zip(kb_result_temp, list(df.columns)), key=lambda pair: pair[0], reverse=True)
+        kb_sort_list =[elem for elem in kb_sort_list if elem[0] != 0] 
+
         if len(kb_repeating) == 0:
-            kb_repeating = set([x for _, x in sorted(zip(kb_result_temp, list(df.columns)), key=lambda pair: pair[0], reverse=True)][:400])
+            kb_repeating = set([x for _, x in kb_sort_list][:400])
         else:
-            kb_repeating = kb_repeating & set([x for _, x in sorted(zip(kb_result_temp, list(df.columns)), key=lambda pair: pair[0], reverse=True)][:400])
+            kb_repeating = kb_repeating & set([x for _, x in kb_sort_list][:400])
         #print(kb_scores)
     else:
         file_exists = False
@@ -87,7 +99,7 @@ print(kb_repeating)
 print("stop \n\n")
 
 # Sort KB scores
-KB_imp_features = [x for _, x in sorted(zip(kb_scores, list(df.columns)), key=lambda pair: pair[0], reverse=True)]
+kb_imp_features = [x for _, x in sorted(zip(kb_scores, list(df.columns)), key=lambda pair: pair[0], reverse=True)]
 #print(KB_imp_features[:100])
 
 
@@ -98,7 +110,7 @@ n = 0
 file_exists = True
 nc_repeating = set()
 while file_exists:
-    if exists('data_1b_lr_' + str(n)):
+    if exists('data_1b_nc_' + str(n)):
         nc_result_temp = pd.read_csv('data_1b_nc_' + str(n), sep = " ")
         centroid_1 = np.array(nc_result_temp.loc[0])
         centroid_1 = np.delete(centroid_1, 0)
@@ -107,10 +119,14 @@ while file_exists:
         centroid_new = abs(centroid_1 - (centroid_1 + centroid_2)/2)
         nc_scores += centroid_new
         n += 1
+
+        nc_sort_list = sorted(zip(centroid_new, list(df.columns)), key=lambda pair: pair[0], reverse=True)
+        nc_sort_list =[elem for elem in nc_sort_list if elem[0] != 0] 
+
         if len(nc_repeating) == 0:
-            nc_repeating = set([x for _, x in sorted(zip(centroid_new, list(df.columns)), key=lambda pair: pair[0], reverse=True)][:400])
+            nc_repeating = set([x for _, x in nc_sort_list][:400])
         else:
-            nc_repeating = nc_repeating & set([x for _, x in sorted(zip(centroid_new, list(df.columns)), key=lambda pair: pair[0], reverse=True)][:400])
+            nc_repeating = nc_repeating & set([x for _, x in nc_sort_list][:400])
         #print(nc_scores.max())
     else:
         file_exists = False
@@ -118,19 +134,22 @@ print("repeting")
 print(nc_repeating)
 print("stop \n\n")
 
+# Sort NC scores
+nc_imp_features = [x for _, x in sorted(zip(nc_scores, list(df.columns)), key=lambda pair: pair[0], reverse=True)]
+#print(NC_imp_features[:100])
+
+
 print("Repetas in all runs for all models")
 print(nc_repeating & LR_repeating & kb_repeating)
 print("\n")
-# Sort NC scores
-NC_imp_features = [x for _, x in sorted(zip(nc_scores, list(df.columns)), key=lambda pair: pair[0], reverse=True)]
-#print(NC_imp_features[:100])
 
-common = set(LR_imp_features[:400]) & set(KB_imp_features[:400]) & set(NC_imp_features[:400])
+
+common = set(LR_imp_features[:400]) & set(kb_imp_features[:400]) & set(nc_imp_features[:400])
 
 
 
 
-imp_feat = set(perm_imp_features[:400])
+imp_feat = set(nc_imp_features[:400])
 imp_feat = [int(name.replace('V', '')) for name in imp_feat]
 
 imp_plt = df.iloc[20].to_numpy().astype(float)
@@ -144,7 +163,7 @@ plt.show()
 
 
 
-imp_feat = perm_repeating
+imp_feat = nc_repeating
 imp_feat = [int(name.replace('V', '')) for name in imp_feat]
 
 imp_plt = df.iloc[20].to_numpy().astype(float)
