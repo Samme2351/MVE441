@@ -17,7 +17,7 @@ from sklearn.decomposition import PCA
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_selection import SequentialFeatureSelector, SelectKBest, f_classif
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis, QuadraticDiscriminantAnalysis
-from sklearn.datasets import load_digits, make_moons, make_swiss_roll, make_multilabel_classification, make_circles
+from sklearn.datasets import load_digits, make_moons, make_swiss_roll, make_multilabel_classification, make_circles, make_hastie_10_2
 
 df = pd.read_csv('../Data/CATSnDOGS.csv', sep="," ,header = 0)
 labels_df = pd.read_csv('../Data/Labels.csv', header = 0)
@@ -143,7 +143,7 @@ print(svc_mat/iter)
 '''
 
 ## 1 b
-for n in tqdm(range(10)):
+for n in tqdm(range(1)):
     x_train, x_test, y_train, y_test = pre_process(df, labels_df, 0.7)
 
     LR = LogisticRegression(penalty='l1', solver='liblinear', max_iter=300)
@@ -170,13 +170,15 @@ tcga_labels = pd.read_csv('../Data/TCGAlabels', sep = " ", header = 0)
 digits_df, digits_labels = load_digits(return_X_y=True, as_frame=True)
 splits = [0.05, 0.4, 0.7]
 
-moons_data, moons_labels = make_circles(1000)
+moons_data, moons_labels = make_circles(1000, noise=0.05)
+plt.scatter(moons_data[:,0], moons_data[:,1], c=moons_labels, cmap='cool')
+plt.show()
 
-for n in tqdm(range(20)):
+for n in tqdm(range(50)):
     for split in splits:
         x_train, x_test, y_train, y_test = train_test_split(moons_data, moons_labels, test_size=1-split)#pre_process(pd.DataFrame(moons_data), pd.DataFrame(moons_data), split)
 
-        ## KNNsklearn data sets
+        ## KNN
         knn = KNeighborsClassifier(n_neighbors=10)
         knn.fit(x_train, y_train)
         y_pred = knn.predict(x_test)
@@ -198,7 +200,7 @@ for n in tqdm(range(20)):
         qda_score = np.append(qda_score, accuracy_score(y_test, y_pred))
 
         ## LR
-        lr = LogisticRegression(solver='liblinear', max_iter=300)
+        lr = LogisticRegression(penalty = None, max_iter=300)
         lr.fit(x_train, y_train)
         y_pred = lr.predict(x_test)
         lr_score = f1_score(y_test, y_pred, average=None)
@@ -212,14 +214,21 @@ for n in tqdm(range(20)):
         lasso_score = np.append(lasso_score, accuracy_score(y_test, y_pred))
 
         ## SVC
-        svc = SVC()
+        svc = SVC(kernel='linear')
         svc.fit(x_train, y_train)
         y_pred = svc.predict(x_test)
-        svc_score = f1_score(y_test, y_pred, average=None)
-        svc_score = np.append(svc_score, accuracy_score(y_test, y_pred))
+        svc_lin_score = f1_score(y_test, y_pred, average=None)
+        svc_lin_score = np.append(svc_lin_score, accuracy_score(y_test, y_pred))
+
+        ## SVC
+        svc = SVC(kernel='poly')
+        svc.fit(x_train, y_train)
+        y_pred = svc.predict(x_test)
+        svc_poly_score = f1_score(y_test, y_pred, average=None)
+        svc_poly_score = np.append(svc_poly_score, accuracy_score(y_test, y_pred))
 
         ## RF
-        rf = RandomForestClassifier()
+        rf = RandomForestClassifier(n_estimators=100)
         rf.fit(x_train, y_train)
         y_pred = rf.predict(x_test)
         rf_score = f1_score(y_test, y_pred, average=None)
@@ -230,7 +239,7 @@ for n in tqdm(range(20)):
         le.fit(y_train)
         y_train = le.transform(y_train)
         y_test = le.transform(y_test)
-        xgb = XGBClassifier()
+        xgb = XGBClassifier(n_estimators = 100)
         xgb.fit(x_train, y_train)
         y_pred = xgb.predict(x_test)
         xgb_score = f1_score(y_test, y_pred, average=None)
@@ -279,6 +288,6 @@ for n in tqdm(range(20)):
             nn_score = f1_score(y_test_int, y_pred, average=None)
             nn_score = np.append(nn_score, accuracy_score(y_test_int, y_pred))
 
-        scores = pd.DataFrame(data = [knn_score, lda_score, lr_score, lasso_score, svc_score, rf_score, xgb_score, nn_score], index = ['knn', 'lda', 'lr', 'lasso', 'svc', 'rf', 'xgb', 'nn'], columns = ['1', '2', 'overall'])
+        scores = pd.DataFrame(data = [knn_score, lda_score, qda_score, lr_score, lasso_score, svc_lin_score, svc_poly_score, rf_score, xgb_score, nn_score], index = ['knn', 'lda', 'qda', 'lr', 'lasso', 'svc_lin', 'svc_poly', 'rf', 'xgb', 'nn'], columns = ['1', '2', 'overall'])
         file_name = './data_2_' + str(split) + '_' + str(n)
         scores.to_csv(file_name, sep = ' ')
