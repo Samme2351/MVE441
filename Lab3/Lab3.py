@@ -24,8 +24,8 @@ df = pd.read_csv('./Data/CATSnDOGS.csv', sep="," ,header = 0)
 labels_df = pd.read_csv('./Data/Labels.csv', header = 0)
 
 
-plt.imshow(df.iloc[158].to_numpy().reshape(64,64).transpose(), cmap=colormaps['bone'])
-plt.show()
+#plt.imshow(df.iloc[158].to_numpy().reshape(64,64).transpose(), cmap=colormaps['bone'])
+#plt.show()
 
 def pre_process(data, labels, train_size):
     #Split data into training and test data
@@ -195,7 +195,6 @@ for n in tqdm(range(11,100)):
     NC = NearestCentroid(shrink_threshold=0.5)
     NC.fit(x_train, y_train)
     print(NC.centroids_)
-    NC_overall_centroid = (NC.centroids_[0,:] + NC.centroids_[1,:])/2
     NC_centroids = pd.DataFrame(NC.centroids_)
     NC_centroids.to_csv('./data_1b_nc_' + str(n), sep = " ")
 

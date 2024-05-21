@@ -68,6 +68,7 @@ print("repeting")
 print(perm_repeating)
 print("stop \n\n")
 
+
 # Sort LR scores
 perm_imp_features = [x for _, x in sorted(zip(perm_scores, list(df.columns)), key=lambda pair: pair[0], reverse=True)]
 #print(LR_imp_features[:100])
@@ -100,6 +101,7 @@ print("stop \n\n")
 
 # Sort KB scores
 kb_imp_features = [x for _, x in sorted(zip(kb_scores, list(df.columns)), key=lambda pair: pair[0], reverse=True)]
+
 #print(KB_imp_features[:100])
 
 
@@ -149,7 +151,7 @@ common = set(LR_imp_features[:400]) & set(kb_imp_features[:400]) & set(nc_imp_fe
 
 
 
-imp_feat = set(nc_imp_features[:400])
+imp_feat = set(LR_imp_features[:400])
 imp_feat = [int(name.replace('V', '')) for name in imp_feat]
 
 imp_plt = df.iloc[20].to_numpy().astype(float)
@@ -159,11 +161,12 @@ cmap.set_bad((1,0,0,1))
 imp_plt[imp_feat] = np.nan
 imp_plt = imp_plt.reshape((64,64)).transpose()
 plt.imshow(imp_plt, cmap = cmap)
+plt.title("The most important features for LR (Beta)")
 plt.show()
 
 
 
-imp_feat = nc_repeating
+imp_feat = LR_repeating
 imp_feat = [int(name.replace('V', '')) for name in imp_feat]
 
 imp_plt = df.iloc[20].to_numpy().astype(float)
@@ -173,4 +176,5 @@ cmap.set_bad((1,0,0,1))
 imp_plt[imp_feat] = np.nan
 imp_plt = imp_plt.reshape((64,64)).transpose()
 plt.imshow(imp_plt, cmap = cmap)
+plt.title("The features which are important in every run for LR (Beta)")
 plt.show()
