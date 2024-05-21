@@ -26,22 +26,22 @@ data_mat_nn = pd.read_csv('./data_mat_nn', sep =" ", header= 0, index_col=0)
 def plot_ind(daf):
     for i in daf.columns:
         plt.imshow(df.iloc[int(i)].to_numpy().reshape(64,64).transpose(), cmap=colormaps['bone'])
-        plt.title(f"This is {animal[labels_df.at[int(i),'x']]} but we believe it to be the other {daf.at[0,i]} times")
+        plt.title(f"This is a {animal[labels_df.at[int(i),'x']]} but we believe it to be otherwise {daf.at[0,i]} times")
         plt.show()
 
 def reverse_sort(dictionary):
     return dict(sorted(dictionary.items(), key=lambda item: item[1], reverse=True))
 
 
-pictures = 1
-accuracy = 1
+pictures = 0
+accuracy = 0
 class_err = 1
 err_cut_off = 1
 
 iter = 1000
 
 if err_cut_off == 1:
-    cut_off = 0.05
+    cut_off = 0.25
     print("During {iter} rounds with {cut_off*100:.0f}% cutoff")
 
     data_knn = data_knn[data_knn>=cut_off*iter]
@@ -102,7 +102,7 @@ if err_cut_off == 1:
     occur_6 = {i:occurences[i] for i in occurences if occurences[i]==6}
     print(reverse_sort(occur_6))
     print(f"All 6 methods fail att {len(occur_6)} out of 198 pictures")
-    #plot_ind(pd.DataFrame(data=reverse_sort(occurences), index=[0]))
+    plot_ind(pd.DataFrame(data=reverse_sort(occurences), index=[0]))
 
 #class errors
 if class_err == 1:
@@ -118,6 +118,10 @@ if class_err == 1:
     print(data_mat_LDA)
     print("NN:")
     print(data_mat_nn)
+    print("mean:")
+    mean =(data_mat_knn+data_mat_LR+data_mat_nn+data_mat_LDA+data_mat_XGB+data_mat_svc)/6
+    print(mean)
+    print(mean.at[1,"0"]/mean.at[0,"1"])
 
 
 #calulate accuracy
