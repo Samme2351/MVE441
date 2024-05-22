@@ -32,10 +32,10 @@ def plot_ind(daf):
 def reverse_sort(dictionary):
     return dict(sorted(dictionary.items(), key=lambda item: item[1], reverse=True))
 
-for i in range(1,199):
-    plt.imshow(df.iloc[int(i)].to_numpy().reshape(64,64).transpose(), cmap=colormaps['bone'])
-    plt.title(f"This is a {animal[labels_df.at[int(i),'x']]} ")
-    plt.show()
+#for i in range(1,199):
+#    plt.imshow(df.iloc[int(i)].to_numpy().reshape(64,64).transpose(), cmap=colormaps['bone'])
+#    plt.title(f"This is a {animal[labels_df.at[int(i),'x']]} ")
+#    plt.show()
 
 
 pictures = 0
